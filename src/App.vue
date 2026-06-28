@@ -11,6 +11,7 @@
       <router-link to="/publish">发布</router-link>
       <router-link to="/message">消息</router-link>
       <router-link to="/profile">我的</router-link>
+      <router-link to="/dashboard">看板</router-link>
     </nav>
 
     <RouterView />
