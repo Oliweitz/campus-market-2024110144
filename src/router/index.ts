@@ -9,6 +9,36 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/list',
+      name: 'list',
+      component: () => import('@/views/ListView.vue'),
+    },
+    {
+      path: '/detail/:id',
+      name: 'detail',
+      component: () => import('@/views/DetailView.vue'),
+    },
+    {
+      path: '/publish',
+      name: 'publish',
+      component: () => import('@/views/PublishView.vue'),
+    },
+    {
+      path: '/message',
+      name: 'message',
+      component: () => import('@/views/MessageView.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/ProfileView.vue'),
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/views/DashboardView.vue'),
+    },
   ],
 })
 

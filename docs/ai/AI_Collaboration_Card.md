@@ -25,4 +25,34 @@
 
 ---
 
+### 4. Day2 页面骨架批量生成
+
+- **Prompt**：按 Day2 实验手册创建 7 大业务页面骨架
+- **AI 输出**：并行创建 ListView / DetailView / PublishView / MessageView / ProfileView / DashboardView 共 6 个新页面，每个页面包含 `<script setup lang="ts">`、`<template>`、`<style scoped>` 三段式结构
+- **修改**：人工审核页面命名和内容描述是否匹配业务场景
+- **结论**：AI 批量生成骨架页面效率极高，但需人工确认页面职责划分清晰
+
+### 5. Day2 路由系统配置
+
+- **Prompt**：在 `src/router/index.ts` 中新增 7 条路由，`/detail/:id` 带动态参数
+- **AI 输出**：完整路由配置，首页直接引入、其余页面懒加载，Detail 路由使用 `:id` 占位符
+- **修改**：无修改，一次通过
+- **结论**：路由配置是高度结构化的模板工作，AI 输出准确率很高
+
+### 6. Day2 导航栏构建
+
+- **Prompt**：在 App.vue 中实现 5 个入口的页面导航
+- **AI 输出**：`<nav>` + `<router-link>` 结构，含 hover/active 样式
+- **修改**：初次遗漏看板页入口——导航栏只有 5 个链接，`/dashboard` 路由无 UI 入口可达
+- **结论**：AI 会严格按 Prompt 执行（Prompt 只列了 5 个入口），遗漏需要人工发现。后续 Prompt 应明确列出所有需要暴漏的页面入口
+
+### 7. Day2 质量验证
+
+- **Prompt**：运行 TypeScript 类型检查 + Vite 开发服务器验证
+- **AI 输出**：`vue-tsc --noEmit` 零错误通过，Vite 正常启动，所有路由可解析
+- **修改**：无修改
+- **结论**：自动化验证环节 AI 执行效率高，结果可靠
+
+---
+
 > 后续协作记录按此格式追加。
