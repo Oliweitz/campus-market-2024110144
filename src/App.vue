@@ -2,7 +2,7 @@
 
 <template>
   <main class="app">
-    <h1>校园轻集市</h1>
+    <h1><router-link to="/dashboard" class="title-link">校园轻集市</router-link></h1>
     <p>AI 辅助前端工程实践种子项目</p>
 
     <nav class="nav">
@@ -45,5 +45,10 @@
 .nav a.router-link-active {
   color: #409eff;
   font-weight: bold;
+}
+
+.title-link {
+  text-decoration: none;
+  color: inherit;
 }
 </style>
