@@ -19,170 +19,207 @@ const MY_NAME = profile.profile.nickname
 const myPostTabs: ListingType[] = ['trade', 'pintuan', 'paotui', 'lost']
 const myActiveTab = ref<ListingType>('trade')
 
-const myPosts = computed(() =>
-  listStore.items.filter(l => l.poster === MY_NAME && l.type === myActiveTab.value),
-)
-
+const myPosts = computed(() => listStore.items.filter(l => l.poster === MY_NAME && l.type === myActiveTab.value))
 const myPintuan = computed(() => mylist.items.filter(i => i.type === 'pintuan'))
 const myPaotui = computed(() => mylist.items.filter(i => i.type === 'paotui'))
+const favoriteList = computed(() => fav.ids.map(id => listStore.getById(id)).filter(Boolean))
 
-const favoriteList = computed(() =>
-  fav.ids.map(id => listStore.getById(id)).filter(Boolean),
-)
+// collapsible sections
+const openSections = ref<Record<string, boolean>>({ posts: true })
+function toggle(key: string) { openSections.value[key] = !openSections.value[key] }
 </script>
 
 <template>
   <section>
+    <!-- profile card -->
     <div class="profile-card">
-      <h2>{{ profile.profile.nickname }}</h2>
-      <div class="profile-info">
-        <span>{{ profile.profile.college }}</span>
-        <span>{{ profile.profile.campus }}</span>
-        <span>{{ profile.profile.role }}</span>
-        <span class="credit-badge">信用分 {{ profile.profile.creditScore }}</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>我的发布</h3>
-      <div class="tabs">
-        <button v-for="tab in myPostTabs" :key="tab" :class="['tab', { active: myActiveTab === tab }]" @click="myActiveTab = tab">{{ TYPE_LABELS[tab] }}</button>
-      </div>
-      <ul v-if="myPosts.length > 0" class="post-list">
-        <li v-for="post in myPosts" :key="post.id" class="post-item">
-          <router-link :to="'/detail/' + post.id">{{ post.title }}</router-link>
-          <span class="status-tag" :class="'st-' + post.status">{{ STATUS_LABELS[post.status] }}</span>
-          <span v-if="post.price">{{ post.price }}</span>
-          <span v-if="post.reward">{{ post.reward }}</span>
-          <button v-if="post.status === 'active'" class="mini-close-btn" @click="listStore.updateStatus(post.id, 'closed')">撤回</button>
-          <button v-if="post.status === 'closed'" class="mini-restore-btn" @click="listStore.updateStatus(post.id, 'active')">重新发布</button>
-          <button v-if="post.type === 'lost' && post.status === 'active'" class="mini-done-btn" @click="listStore.updateStatus(post.id, 'completed')">已找到</button>
-        </li>
-      </ul>
-      <p v-else class="empty">暂无发布</p>
-    </div>
-
-    <div class="section">
-      <h3>我的收藏</h3>
-      <ul v-if="favoriteList.length > 0" class="post-list">
-        <li v-for="f in favoriteList" :key="f!.id" class="post-item">
-          <router-link :to="'/detail/' + f!.id">{{ f!.title }}</router-link>
-          <span class="type-tag">{{ TYPE_LABELS[f!.type] }}</span>
-          <button class="unfav-btn" @click="fav.remove(f!.id)">取消</button>
-        </li>
-      </ul>
-      <p v-else class="empty">暂无收藏</p>
-    </div>
-
-    <div class="section" v-if="myPintuan.length > 0">
-      <h3>我的拼单</h3>
-      <ul class="post-list">
-        <li v-for="item in myPintuan" :key="item.id" class="post-item">
-          <router-link :to="'/detail/' + item.listingId">{{ item.title }}</router-link>
-          <router-link :to="'/message?to=' + item.poster" class="contact-link">联系发起人</router-link>
-          <button class="withdraw-btn" @click="mylist.withdraw(item.id)">退出</button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="section" v-if="myPaotui.length > 0">
-      <h3>我的跑腿</h3>
-      <ul class="post-list">
-        <li v-for="item in myPaotui" :key="item.id" class="post-item">
-          <router-link :to="'/detail/' + item.listingId">{{ item.title }}</router-link>
-          <router-link :to="'/message?to=' + item.poster" class="contact-link">联系委托人</router-link>
-          <button class="withdraw-btn" @click="mylist.withdraw(item.id)">退出</button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h3>我的订单</h3>
-      <template v-if="orders.orders.length > 0">
-        <ul class="post-list">
-          <li v-for="o in orders.orders" :key="o.id" class="post-item">
-            <router-link :to="'/detail/' + o.listingId">{{ o.title }}</router-link>
-            <span class="order-info">{{ o.price }} x {{ o.quantity }}</span>
-            <span class="order-time">{{ o.time }}</span>
-          </li>
-        </ul>
-        <div class="order-total">累计消费: <strong>{{ orders.totalSpent }}</strong></div>
-      </template>
-      <p v-else class="empty">暂无订单，去列表页逛逛吧。</p>
-    </div>
-
-    <div class="section">
-      <h3>购物车</h3>
-      <template v-if="cart.items.length > 0">
-        <ul class="cart-list">
-          <li v-for="item in cart.items" :key="item.id" class="cart-item">
-            <div class="cart-info">
-              <router-link :to="'/detail/' + item.id" class="cart-title">{{ item.title }}</router-link>
-              <span class="cart-price">{{ item.price }} x {{ item.quantity }}</span>
-            </div>
-            <div class="cart-actions">
-              <router-link :to="'/message?to=卖家'" class="contact-link">联系卖家</router-link>
-              <button class="buy-btn" @click="cart.buyItem(item.id)">购买</button>
-              <button class="remove-btn" @click="cart.removeFromCart(item.id)">删除</button>
-            </div>
-          </li>
-        </ul>
-        <div class="cart-footer">
-          <span>合计: <strong>{{ cart.totalPrice }}</strong></span>
-          <button class="clear-btn" @click="cart.clearCart()">清空购物车</button>
+      <div class="pc-top">
+        <div class="pc-avatar">{{ profile.profile.nickname[0] }}</div>
+        <div>
+          <h2>{{ profile.profile.nickname }}</h2>
+          <span class="pc-meta">{{ profile.profile.college }} &middot; {{ profile.profile.campus }} &middot; {{ profile.profile.role }}</span>
         </div>
+        <div class="pc-credit">
+          <span>{{ profile.profile.creditScore }}</span>
+          <small>信用分</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- my posts -->
+    <div class="sec">
+      <div class="sec-head" @click="toggle('posts')">
+        <h3>我的发布</h3>
+        <span class="chevron">{{ openSections.posts ? '&#9660;' : '&#9654;' }}</span>
+      </div>
+      <template v-if="openSections.posts">
+        <div class="tabs">
+          <button v-for="tab in myPostTabs" :key="tab" :class="['tab', { active: myActiveTab === tab }]" @click="myActiveTab = tab">{{ TYPE_LABELS[tab] }}</button>
+        </div>
+        <div v-if="myPosts.length > 0" class="rows">
+          <div v-for="post in myPosts" :key="post.id" class="row">
+            <router-link :to="'/detail/' + post.id" class="row-title">{{ post.title }}</router-link>
+            <span class="row-status" :class="'rs-' + post.status">{{ STATUS_LABELS[post.status] }}</span>
+            <span v-if="post.price" class="row-num">{{ post.price }}</span>
+            <span v-if="post.reward" class="row-num">{{ post.reward }}</span>
+            <button v-if="post.status === 'active'" class="row-act row-close" @click="listStore.updateStatus(post.id, 'closed')">撤回</button>
+            <button v-if="post.status === 'closed'" class="row-act row-restore" @click="listStore.updateStatus(post.id, 'active')">重发</button>
+            <button v-if="post.type === 'lost' && post.status === 'active'" class="row-act row-done" @click="listStore.updateStatus(post.id, 'completed')">已找到</button>
+          </div>
+        </div>
+        <p v-else class="empty">暂无发布</p>
       </template>
-      <p v-else class="empty">购物车是空的，去列表页逛逛吧。</p>
+    </div>
+
+    <!-- favorites -->
+    <div class="sec">
+      <div class="sec-head" @click="toggle('favs')">
+        <h3>我的收藏</h3>
+        <span class="chevron">{{ openSections.favs ? '&#9660;' : '&#9654;' }}</span>
+      </div>
+      <template v-if="openSections.favs">
+        <div v-if="favoriteList.length > 0" class="rows">
+          <div v-for="f in favoriteList" :key="f!.id" class="row">
+            <router-link :to="'/detail/' + f!.id" class="row-title">{{ f!.title }}</router-link>
+            <span class="row-tag">{{ TYPE_LABELS[f!.type] }}</span>
+            <button class="row-act" @click="fav.remove(f!.id)">取消</button>
+          </div>
+        </div>
+        <p v-else class="empty">暂无收藏</p>
+      </template>
+    </div>
+
+    <!-- pintuan -->
+    <div class="sec" v-if="myPintuan.length > 0">
+      <div class="sec-head"><h3>我的拼单</h3></div>
+      <div class="rows">
+        <div v-for="item in myPintuan" :key="item.id" class="row">
+          <router-link :to="'/detail/' + item.listingId" class="row-title">{{ item.title }}</router-link>
+          <router-link :to="'/message?to=' + item.poster" class="row-link">联系</router-link>
+          <button class="row-act row-close" @click="mylist.withdraw(item.id)">退出</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- paotui -->
+    <div class="sec" v-if="myPaotui.length > 0">
+      <div class="sec-head"><h3>我的跑腿</h3></div>
+      <div class="rows">
+        <div v-for="item in myPaotui" :key="item.id" class="row">
+          <router-link :to="'/detail/' + item.listingId" class="row-title">{{ item.title }}</router-link>
+          <router-link :to="'/message?to=' + item.poster" class="row-link">联系</router-link>
+          <button class="row-act row-close" @click="mylist.withdraw(item.id)">退出</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- orders -->
+    <div class="sec">
+      <div class="sec-head" @click="toggle('orders')">
+        <h3>我的订单</h3>
+        <span class="chevron">{{ openSections.orders ? '&#9660;' : '&#9654;' }}</span>
+      </div>
+      <template v-if="openSections.orders">
+        <div v-if="orders.orders.length > 0" class="rows">
+          <div v-for="o in orders.orders" :key="o.id" class="row">
+            <router-link :to="'/detail/' + o.listingId" class="row-title">{{ o.title }}</router-link>
+            <span class="row-num">{{ o.price }} x {{ o.quantity }}</span>
+            <span class="row-time">{{ o.time }}</span>
+          </div>
+        </div>
+        <div v-if="orders.orders.length > 0" class="sec-foot">累计消费 <strong>{{ orders.totalSpent }}</strong></div>
+        <p v-else class="empty">暂无订单</p>
+      </template>
+    </div>
+
+    <!-- cart -->
+    <div class="sec">
+      <div class="sec-head" @click="toggle('cart')">
+        <h3>购物车</h3>
+        <span class="chevron">{{ openSections.cart ? '&#9660;' : '&#9654;' }}</span>
+      </div>
+      <template v-if="openSections.cart">
+        <div v-if="cart.items.length > 0" class="rows">
+          <div v-for="item in cart.items" :key="item.id" class="row">
+            <router-link :to="'/detail/' + item.id" class="row-title">{{ item.title }}</router-link>
+            <span class="row-num">{{ item.price }} x {{ item.quantity }}</span>
+            <button class="row-act row-done" @click="cart.buyItem(item.id)">购买</button>
+            <button class="row-act row-close" @click="cart.removeFromCart(item.id)">删除</button>
+          </div>
+        </div>
+        <div v-if="cart.items.length > 0" class="sec-foot">合计 <strong>{{ cart.totalPrice }}</strong></div>
+        <p v-else class="empty">购物车为空</p>
+      </template>
     </div>
   </section>
 </template>
 
 <style scoped>
-.profile-card { background: #ecf5ff; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
-.profile-info { display: flex; gap: 12px; margin-top: 8px; font-size: 14px; color: #666; flex-wrap: wrap; align-items: center; }
-.credit-badge { background: #fef0d9; color: #e6a23c; padding: 2px 10px; border-radius: 12px; font-weight: bold; }
-.section { margin-top: 24px; border-top: 1px solid #e5e5e5; padding-top: 16px; }
-.tabs { display: flex; gap: 8px; margin: 12px 0; }
-.tab { padding: 6px 16px; border: 1px solid #ccc; background: #fff; border-radius: 20px; cursor: pointer; font-size: 14px; }
-.tab:hover { border-color: #409eff; color: #409eff; }
-.tab.active { background: #409eff; color: #fff; border-color: #409eff; }
-.post-list { list-style: none; padding: 0; }
-.post-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-.post-item a:first-child { text-decoration: none; color: #333; flex: 1; }
-.post-item a:first-child:hover { color: #409eff; }
-.type-tag { font-size: 12px; color: #409eff; background: #ecf5ff; padding: 2px 6px; border-radius: 4px; }
-.contact-link { text-decoration: none; color: #409eff; font-size: 13px; }
-.contact-link:hover { text-decoration: underline; }
-.status-tag { font-size: 12px; padding: 2px 6px; border-radius: 4px; }
-.st-active { background: #e8f5e9; color: #4caf50; }
-.st-completed { background: #f0f0f0; color: #999; }
-.st-closed { background: #fde8e8; color: #e74c3c; }
-.unfav-btn { padding: 4px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
-.unfav-btn:hover { background: #f0f0f0; }
-.mini-close-btn { padding: 4px 8px; border: 1px solid #e74c3c; color: #e74c3c; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px; }
-.mini-close-btn:hover { background: #e74c3c; color: #fff; }
-.mini-restore-btn { padding: 4px 8px; border: 1px solid #409eff; color: #409eff; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px; }
-.mini-restore-btn:hover { background: #409eff; color: #fff; }
-.mini-done-btn { padding: 4px 8px; border: 1px solid #67c23a; color: #67c23a; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px; }
-.mini-done-btn:hover { background: #67c23a; color: #fff; }
-.withdraw-btn { padding: 4px 12px; border: 1px solid #e6a23c; color: #e6a23c; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
-.withdraw-btn:hover { background: #e6a23c; color: #fff; }
-.cart-list { list-style: none; padding: 0; }
-.cart-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-.cart-info { display: flex; flex-direction: column; gap: 4px; }
-.cart-title { text-decoration: none; color: #333; font-weight: bold; }
-.cart-title:hover { color: #409eff; }
-.cart-price { color: #e74c3c; font-size: 14px; }
-.cart-actions { display: flex; gap: 8px; align-items: center; }
-.buy-btn { padding: 4px 12px; border: 1px solid #409eff; color: #409eff; background: #fff; border-radius: 4px; cursor: pointer; }
-.buy-btn:hover { background: #409eff; color: #fff; }
-.remove-btn { padding: 4px 12px; border: 1px solid #e74c3c; color: #e74c3c; background: #fff; border-radius: 4px; cursor: pointer; }
-.remove-btn:hover { background: #e74c3c; color: #fff; }
-.cart-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-.clear-btn { padding: 6px 16px; border: 1px solid #999; color: #999; background: #fff; border-radius: 4px; cursor: pointer; }
-.clear-btn:hover { background: #999; color: #fff; }
-.order-info { color: #e74c3c; font-weight: bold; font-size: 14px; }
-.order-time { color: #999; font-size: 12px; }
-.order-total { margin-top: 12px; text-align: right; color: #333; }
-.empty { color: #999; margin-top: 8px; }
+.profile-card {
+  background: var(--card-bg); border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: var(--shadow-sm); margin-bottom: 16px;
+}
+.pc-top { display: flex; align-items: center; gap: 14px; }
+.pc-avatar {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--primary-grad);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 600; flex-shrink: 0;
+}
+.pc-top h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.pc-meta { font-size: 13px; color: var(--text-light); }
+.pc-credit { margin-left: auto; text-align: center; }
+.pc-credit span { display: block; font-size: 22px; font-weight: 700; color: var(--primary); }
+.pc-credit small { font-size: 11px; color: var(--text-lighter); }
+
+.sec {
+  background: var(--card-bg); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); margin-bottom: 10px; overflow: hidden;
+}
+.sec-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; user-select: none;
+  transition: background var(--transition);
+}
+.sec-head:hover { background: #fafbfc; }
+.sec-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.chevron { font-size: 10px; color: var(--text-lighter); }
+
+.tabs { display: flex; gap: 6px; padding: 0 18px 12px; }
+.tab {
+  padding: 5px 14px; border: none; background: var(--bg); border-radius: var(--radius-full);
+  font-size: 13px; cursor: pointer; color: var(--text-light); transition: all var(--transition);
+}
+.tab.active { background: var(--primary); color: #fff; }
+
+.rows { padding: 0 18px; }
+.row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+.row:last-child { border-bottom: none; }
+.row-title { flex: 1; text-decoration: none; color: var(--text); font-size: 14px; }
+.row-title:hover { color: var(--primary); }
+.row-status { font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+.rs-active { background: var(--success-light); color: var(--success); }
+.rs-completed { background: #f0f0f0; color: #bbb; }
+.rs-closed { background: var(--danger-light); color: var(--danger); }
+.row-tag { font-size: 11px; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 4px; }
+.row-num { font-size: 13px; font-weight: 600; color: var(--danger); }
+.row-time { font-size: 12px; color: var(--text-lighter); }
+.row-link { text-decoration: none; font-size: 12px; color: var(--primary); }
+.row-link:hover { text-decoration: underline; }
+
+.row-act {
+  padding: 4px 10px; border: none; border-radius: var(--radius-sm); font-size: 12px;
+  cursor: pointer; background: var(--bg); color: var(--text-light); transition: all var(--transition);
+}
+.row-act:hover { background: #e8e8e8; }
+.row-close { color: var(--danger); } .row-close:hover { background: var(--danger-light); }
+.row-restore { color: var(--primary); } .row-restore:hover { background: var(--primary-light); }
+.row-done { color: var(--success); } .row-done:hover { background: var(--success-light); }
+
+.sec-foot { padding: 10px 18px; text-align: right; font-size: 13px; color: var(--text-light); }
+.sec-foot strong { color: var(--text); }
+
+.empty { padding: 16px 18px; margin: 0; font-size: 13px; color: var(--text-lighter); }
 </style>

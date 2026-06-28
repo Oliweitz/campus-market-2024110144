@@ -25,75 +25,170 @@ const filteredList = computed(() => {
   }
   return result
 })
+
+const sortBy = ref<'time' | 'price'>('time')
+const sortedList = computed(() => {
+  const arr = [...filteredList.value]
+  if (sortBy.value === 'time') arr.sort((a, b) => b.publishTime.localeCompare(a.publishTime))
+  return arr
+})
+
+const pageSize = 6
+const currentPage = ref(1)
+const totalPages = computed(() => Math.ceil(sortedList.value.length / pageSize))
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return sortedList.value.slice(start, start + pageSize)
+})
+function goPage(p: number) {
+  if (p >= 1 && p <= totalPages.value) currentPage.value = p
+}
 </script>
 
 <template>
   <section>
-    <h2>校园集市</h2>
+    <h2 class="page-title">校园集市</h2>
 
     <div class="filter-bar">
-      <input v-model="keyword" placeholder="搜索关键词..." class="search-input" />
-      <select v-model="typeFilter" class="filter-select">
-        <option value="">全部分类</option>
+      <input v-model="keyword" placeholder="搜索..." class="search-input" />
+      <select v-model="typeFilter" class="pill">
+        <option value="">分类</option>
         <option v-for="(label, key) in TYPE_LABELS" :key="key" :value="key">{{ label }}</option>
       </select>
-      <select v-model="campusFilter" class="filter-select">
-        <option value="">全部校区</option>
+      <select v-model="campusFilter" class="pill">
+        <option value="">校区</option>
         <option v-for="c in CAMPUS_LIST" :key="c" :value="c">{{ c }}</option>
       </select>
-      <select v-model="statusFilter" class="filter-select">
-        <option value="">全部状态</option>
+      <select v-model="statusFilter" class="pill">
+        <option value="">状态</option>
         <option v-for="(label, key) in STATUS_LABELS" :key="key" :value="key">{{ label }}</option>
+      </select>
+      <select v-model="sortBy" class="pill pill-sm">
+        <option value="time">最新</option>
+        <option value="price">价格</option>
       </select>
     </div>
 
-    <template v-if="filteredList.length > 0">
-      <ul class="list">
-        <li v-for="item in filteredList" :key="item.id" class="list-item">
-          <router-link :to="'/detail/' + item.id" class="item-link">
-            <div class="item-main">
-              <strong class="item-title">{{ item.title }}</strong>
-              <span class="item-type">{{ TYPE_LABELS[item.type] }}</span>
-              <span class="item-status" :class="'status-' + item.status">{{ STATUS_LABELS[item.status] }}</span>
+    <template v-if="pagedList.length > 0">
+      <div class="list">
+        <div v-for="item in pagedList" :key="item.id" class="list-card">
+          <router-link :to="'/detail/' + item.id" class="card-body">
+            <div class="card-top">
+              <strong>{{ item.title }}</strong>
+              <span class="status-dot" :class="'dot-' + item.status"></span>
             </div>
-            <div class="item-sub">
-              <span v-if="item.price" class="item-price">{{ item.price }}</span>
-              <span v-if="item.reward" class="item-price">{{ item.reward }}</span>
-              <span v-if="item.unitPrice" class="item-price">{{ item.unitPrice }}/人</span>
-              <span v-if="item.targetCount" class="item-count">{{ item.currentCount }}/{{ item.targetCount }}人</span>
-              <span class="item-campus">{{ item.campus }}</span>
-              <span class="item-poster">{{ item.poster }}</span>
+            <div class="card-mid">
+              <span class="c-type">{{ TYPE_LABELS[item.type] }}</span>
+              <span v-if="item.price" class="c-num">{{ item.price }}</span>
+              <span v-if="item.reward" class="c-num">{{ item.reward }}</span>
+              <span v-if="item.unitPrice" class="c-num">{{ item.unitPrice }}/人</span>
+              <span v-if="item.targetCount" class="c-join">{{ item.currentCount }}/{{ item.targetCount }}人</span>
+            </div>
+            <div class="card-bot">
+              <span>{{ item.campus }}</span>
+              <span>&middot;</span>
+              <span>{{ item.poster }}</span>
+              <span class="card-time">{{ item.publishTime.slice(0, 10) }}</span>
             </div>
           </router-link>
-          <button class="fav-toggle" @click="fav.toggle(item.id)">
+          <button class="fav-dot" @click="fav.toggle(item.id)">
             {{ fav.isFavorited(item.id) ? '&#9733;' : '&#9734;' }}
           </button>
-        </li>
-      </ul>
+        </div>
+      </div>
+
+      <div v-if="totalPages > 1" class="pager">
+        <button :disabled="currentPage === 1" @click="goPage(currentPage - 1)">&laquo;</button>
+        <button v-for="p in totalPages" :key="p" :class="{ active: p === currentPage }" @click="goPage(p)">{{ p }}</button>
+        <button :disabled="currentPage === totalPages" @click="goPage(currentPage + 1)">&raquo;</button>
+      </div>
     </template>
-    <p v-else class="empty">没有找到匹配的信息，试试调整筛选条件。</p>
+    <div v-else class="empty-state">
+      <div class="empty-icon">~</div>
+      <p>没有找到匹配的信息</p>
+      <span>试试调整筛选条件</span>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.search-input { flex: 1; min-width: 150px; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-.filter-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: #fff; cursor: pointer; }
-.list { list-style: none; padding: 0; }
-.list-item { display: flex; align-items: center; margin-bottom: 8px; }
-.item-link { flex: 1; display: block; padding: 14px 16px; border: 1px solid #e5e5e5; border-radius: 6px; text-decoration: none; color: #333; }
-.item-link:hover { background: #f5f5f5; }
-.item-main { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.item-title { font-size: 16px; }
-.item-type { font-size: 12px; color: #409eff; background: #ecf5ff; padding: 2px 8px; border-radius: 4px; }
-.item-status { font-size: 12px; padding: 2px 8px; border-radius: 4px; }
-.status-active { background: #e8f5e9; color: #4caf50; }
-.status-completed { background: #f0f0f0; color: #999; }
-.status-closed { background: #fde8e8; color: #e74c3c; }
-.item-sub { display: flex; align-items: center; gap: 16px; font-size: 14px; color: #999; }
-.item-price { color: #e74c3c; font-weight: bold; }
-.item-count { color: #67c23a; }
-.item-poster { margin-left: auto; }
-.fav-toggle { background: none; border: none; font-size: 20px; cursor: pointer; padding: 8px; color: #e6a23c; flex-shrink: 0; }
-.empty { color: #999; margin-top: 24px; text-align: center; }
+.page-title { font-size: 18px; font-weight: 600; margin: 0 0 16px; color: var(--text); }
+
+.filter-bar { display: flex; gap: 6px; margin-bottom: 16px; align-items: center; }
+.search-input {
+  flex: 1; min-width: 80px; padding: 9px 14px; border: none; border-radius: var(--radius-full);
+  background: var(--card-bg); box-shadow: var(--shadow-sm); font-size: 13px;
+  color: var(--text); outline: none; transition: all var(--transition);
+}
+.search-input:focus { box-shadow: 0 0 0 2px var(--primary-light); }
+.pill {
+  padding: 9px 10px; border: none; border-radius: var(--radius-full);
+  background: var(--card-bg); box-shadow: var(--shadow-sm); font-size: 13px;
+  color: var(--text); outline: none; cursor: pointer; transition: all var(--transition);
+  white-space: nowrap;
+}
+.pill-sm { padding: 9px 8px; font-size: 12px; }
+.pill:focus { box-shadow: 0 0 0 2px var(--primary-light); }
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+.list-card {
+  display: flex; align-items: stretch; background: var(--card-bg);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  transition: all var(--transition); overflow: hidden;
+}
+.list-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.card-body {
+  flex: 1; padding: 14px 16px; text-decoration: none; color: var(--text);
+}
+.card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.card-top strong { font-size: 15px; font-weight: 600; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot-active { background: var(--success); }
+.dot-completed { background: #ccc; }
+.dot-closed { background: var(--danger); }
+
+.card-mid { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.c-type {
+  font-size: 11px; color: var(--primary); background: var(--primary-light);
+  padding: 2px 7px; border-radius: 4px;
+}
+.c-num { font-size: 14px; font-weight: 600; color: var(--danger); }
+.c-join { font-size: 13px; color: var(--success); }
+
+.card-bot { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-light); }
+.card-time { margin-left: auto; color: var(--text-lighter); }
+
+.fav-dot {
+  background: none; border: none; font-size: 18px; cursor: pointer;
+  padding: 0 14px; color: var(--warn); transition: all var(--transition);
+  flex-shrink: 0;
+}
+.fav-dot:hover { transform: scale(1.2); }
+
+.empty-state {
+  text-align: center; padding: 60px 0; color: var(--text-light);
+}
+.empty-icon { font-size: 40px; color: var(--text-lighter); margin-bottom: 12px; }
+.empty-state p { margin: 0; font-size: 15px; }
+.empty-state span { font-size: 13px; color: var(--text-lighter); }
+
+@media (max-width: 600px) {
+  .filter-bar { flex-wrap: wrap; }
+  .pill { font-size: 12px; padding: 8px 6px; }
+}
+@media (max-width: 400px) {
+  .search-input { min-width: 100%; }
+}
+
+.pager {
+  display: flex; justify-content: center; gap: 4px; margin-top: 20px;
+}
+.pager button {
+  width: 34px; height: 34px; border: none; border-radius: 50%;
+  background: var(--card-bg); box-shadow: var(--shadow-sm);
+  font-size: 13px; color: var(--text); cursor: pointer; transition: all var(--transition);
+}
+.pager button:hover { background: var(--bg); }
+.pager button.active { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(91,155,213,0.35); }
+.pager button:disabled { color: var(--text-lighter); cursor: default; }
 </style>
