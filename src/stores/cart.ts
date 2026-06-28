@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useListingsStore } from '@/stores/listings'
+import { useOrdersStore } from '@/stores/orders'
 
 export interface CartItem {
   id: number
@@ -31,6 +33,22 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   function buyItem(id: number) {
+    const cartItem = items.value.find(i => i.id === id)
+    if (!cartItem) return
+    // 记录订单
+    const ordersStore = useOrdersStore()
+    ordersStore.addOrder({ id: cartItem.id, title: cartItem.title, price: cartItem.price, quantity: cartItem.quantity })
+    // 减少库存
+    const listStore = useListingsStore()
+    const listing = listStore.getById(id)
+    if (listing && listing.stock !== undefined) {
+      listing.stock = Math.max(0, listing.stock - cartItem.quantity)
+    }
+    // 库存归零则撤下
+    if (listing && listing.stock === 0) {
+      listStore.updateStatus(id, 'completed')
+    }
+    // 从购物车移除
     items.value = items.value.filter(i => i.id !== id)
   }
 

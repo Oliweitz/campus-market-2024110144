@@ -25,33 +25,53 @@
 
 ---
 
-### 4. Day2 页面骨架批量生成
+### 4. Day2 页面骨架与路由导航
 
-- **Prompt**：按 Day2 实验手册创建 7 大业务页面骨架
-- **AI 输出**：并行创建 ListView / DetailView / PublishView / MessageView / ProfileView / DashboardView 共 6 个新页面，每个页面包含 `<script setup lang="ts">`、`<template>`、`<style scoped>` 三段式结构
-- **修改**：人工审核页面命名和内容描述是否匹配业务场景
-- **结论**：AI 批量生成骨架页面效率极高，但需人工确认页面职责划分清晰
+- **Prompt**：按 Day2 实验手册创建 7 个业务页面 + 路由 + 导航
+- **AI 输出**：一次性创建 6 个新页面 + 7 条路由 + App.vue 导航栏，TypeScript 编译零错误
+- **修改**：初次遗漏看板页导航入口，后续补充；ListView 下拉筛选取代最初列表
+- **结论**：骨架阶段 AI 输出效率极高，结构正确，但需人工检查 UI 可达性
 
-### 5. Day2 路由系统配置
+### 5. 四分类业务场景扩展
 
-- **Prompt**：在 `src/router/index.ts` 中新增 7 条路由，`/detail/:id` 带动态参数
-- **AI 输出**：完整路由配置，首页直接引入、其余页面懒加载，Detail 路由使用 `:id` 占位符
-- **修改**：无修改，一次通过
-- **结论**：路由配置是高度结构化的模板工作，AI 输出准确率很高
+- **Prompt**：按需求文档将列表页改造为二手交易/失物招领/拼单搭子/跑腿委托四分类下拉筛选
+- **AI 输出**：创建 `data/listings.ts` 共享数据层（13 条完整字段），重构 ListView/DetailView 支持四种类型差异化渲染
+- **修改**：多次迭代字段设计，补齐 campus/status/publishTime/deadline 等遗漏字段
+- **结论**：数据模型设计应前置，边写边改效率低
 
-### 6. Day2 导航栏构建
+### 6. 购物车与订单系统
 
-- **Prompt**：在 App.vue 中实现 5 个入口的页面导航
-- **AI 输出**：`<nav>` + `<router-link>` 结构，含 hover/active 样式
-- **修改**：初次遗漏看板页入口——导航栏只有 5 个链接，`/dashboard` 路由无 UI 入口可达
-- **结论**：AI 会严格按 Prompt 执行（Prompt 只列了 5 个入口），遗漏需要人工发现。后续 Prompt 应明确列出所有需要暴漏的页面入口
+- **Prompt**：实现加入购物车、库存管理、购买、订单记录、库存归零自动撤下
+- **AI 输出**：cart/orders 两个 Pinia Store，购物车悬浮窗，profile 页订单列表
+- **修改**：Buy 后需联动订单记录+库存扣减+状态更新，经多轮补全
+- **结论**：跨 Store 联动逻辑需要显式 Prompt，AI 倾向于只做当前 Store 的改动
 
-### 7. Day2 质量验证
+### 7. 消息系统
 
-- **Prompt**：运行 TypeScript 类型检查 + Vite 开发服务器验证
-- **AI 输出**：`vue-tsc --noEmit` 零错误通过，Vite 正常启动，所有路由可解析
-- **修改**：无修改
-- **结论**：自动化验证环节 AI 执行效率高，结果可靠
+- **Prompt**：消息页从空白开始，通过详情页点击用户名动态创建联系人，支持发送+模拟自动回复+未读计数
+- **AI 输出**：chat Store 含 ensureContact/sendMessage/markRead，MessageView 左右分栏布局，模拟回复 800ms 延迟
+- **修改**：最初预置了联系人数据，按要求改为动态添加；补充最后消息预览
+- **结论**：消息系统状态管理复杂，Store 封装后视图层很薄
+
+### 8. 拼单/跑腿参与和撤回
+
+- **Prompt**：拼单参与后人数+1、跑腿接单后撤下、退出后恢复、拼单满员自动完成
+- **AI 输出**：mylist Store 联动 listings Store 的 incrementCount/updateStatus，DetailView 区分发布者/浏览者两套按钮
+- **修改**：退出跑腿后需恢复列表状态，该逻辑在多轮迭代后补齐
+- **结论**：状态流转（active↔closed↔completed）是 Day2 最复杂逻辑，需画状态图才能不遗漏
+
+### 9. 发布、收藏与看板
+
+- **Prompt**：发布页四种类型动态表单、收藏功能、看板数据统计
+- **AI 输出**：PublishView 完整表单框架（发布后写入 listStore 并跳转）、favorites Store、DashboardView 动态柱状图
+- **修改**：发布初始只弹 toast，后改为真正写入数据；去除了全项目 Emoji
+- **结论**：表单+列表+详情的闭环是验证框架完整性的关键
+
+### 10. Bug 修复与构建验证
+
+- **关键 Bug**：ProfileView `@click="/* TODO */"` 导致 Vue 模板编译失败（注释在表达式位置非法）
+- **其他修复**：`v-if` 重复 class、`</ul>` 闭合错误、`\\u00a5` 转义问题
+- **结论**：`vue-tsc` 不检查模板语法，`pnpm build-only` 才是最终验证手段
 
 ---
 
