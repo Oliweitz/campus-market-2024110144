@@ -1,13 +1,27 @@
 <script setup lang="ts">
-import { useChatStore } from '@/stores/chat'
-const chat = useChatStore()
+import { computed, onMounted } from 'vue'
+import { useMessageStore } from '@/stores/messageStore'
+import { useItemStore } from '@/stores/itemStore'
+import { useCartStore } from '@/stores/cart'
+
+const msgStore = useMessageStore()
+const itemStore = useItemStore()
+const cartStore = useCartStore()
+
+const totalCount = computed(() => itemStore.items.length)
+const activeCount = computed(() => itemStore.items.filter((i) => i.status === '进行中').length)
+const completedCount = computed(() => itemStore.items.filter((i) => i.status === '已完成').length)
+const campusCount = computed(() => new Set(itemStore.items.map((i) => i.campus)).size)
+
+onMounted(async () => {
+  await itemStore.fetchItems()
+})
 </script>
 
 <template>
   <main class="app">
     <header class="header">
-      <h1><router-link to="/dashboard" class="title-link">校园轻集市</router-link></h1>
-      <p class="subtitle">AI 辅助前端工程实践种子项目</p>
+      <h1><router-link to="/" class="title-link">校园轻集市</router-link></h1>
     </header>
 
     <nav class="nav">
@@ -16,17 +30,43 @@ const chat = useChatStore()
       <router-link to="/publish">发布</router-link>
       <router-link to="/message">
         消息
-        <span v-if="chat.totalUnread > 0" class="nav-badge">{{ chat.totalUnread }}</span>
+        <span v-if="msgStore.totalUnread > 0" class="nav-badge">{{ msgStore.totalUnread }}</span>
       </router-link>
       <router-link to="/profile">我的</router-link>
-      <router-link to="/dashboard">看板</router-link>
     </nav>
+
+    <router-link to="/dashboard" class="stats-bar">
+      <div class="sb-item">
+        <span class="sb-num">{{ totalCount }}</span>
+        <span class="sb-label">信息总数</span>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-item">
+        <span class="sb-num">{{ activeCount }}</span>
+        <span class="sb-label">进行中</span>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-item">
+        <span class="sb-num">{{ completedCount }}</span>
+        <span class="sb-label">已完成</span>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-item">
+        <span class="sb-num">{{ campusCount }}</span>
+        <span class="sb-label">覆盖校区</span>
+      </div>
+    </router-link>
 
     <RouterView v-slot="{ Component }">
       <Transition name="page" mode="out-in">
         <component :is="Component" />
       </Transition>
     </RouterView>
+
+    <router-link v-if="cartStore.totalCount > 0" to="/profile" class="cart-float">
+      <span class="cart-float-icon">🛒</span>
+      <span class="cart-float-badge">{{ cartStore.totalCount }}</span>
+    </router-link>
   </main>
 </template>
 
@@ -79,99 +119,81 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 </style>
 
 <style scoped>
-.app {
-  max-width: var(--page-width);
-  margin: 0 auto;
-  padding: 28px 32px 60px;
-}
+.app { max-width: var(--page-width); margin: 0 auto; padding: 28px 32px 60px; }
 
-.header { margin-bottom: 8px; }
-.header h1 {
-  font-size: 20px; font-weight: 600; color: var(--text); margin: 0;
-}
-.subtitle {
-  font-size: 13px; color: var(--text-lighter); margin: 4px 0 0;
-}
-
-/* ---- 导航栏 ---- */
-.nav {
-  display: flex;
-  gap: 4px;
-  margin: 18px 0 24px;
-  padding: 4px;
-  background: var(--card-bg);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.nav a {
-  position: relative;
-  text-decoration: none;
-  color: var(--text-light);
-  padding: 8px 18px;
-  border-radius: var(--radius-full);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: all var(--transition);
-}
-.nav a:hover {
-  color: var(--text);
-  background: var(--bg);
-}
-.nav a.router-link-active {
-  color: #fff;
-  background: var(--primary);
-  box-shadow: 0 2px 6px rgba(91,155,213,0.35);
-}
-.nav-badge {
-  position: absolute;
-  top: 2px; right: 4px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 8px;
-  min-width: 16px;
-  text-align: center;
-  line-height: 14px;
-}
-
+.header { margin-bottom: 14px; }
+.header h1 { font-size: 20px; font-weight: 600; color: var(--text); }
 .title-link { text-decoration: none; color: inherit; }
 
-/* page transition */
-.page-enter-active, .page-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+/* ---- 数据信息栏（全宽，仿 banner 风格） ---- */
+.stats-bar {
+  display: flex; align-items: center; gap: 0;
+  background: linear-gradient(135deg, #e3f2fd, #f0f7ff);
+  border-radius: var(--radius-lg); padding: 20px 16px;
+  text-decoration: none; box-shadow: var(--shadow-sm);
+  transition: all var(--transition); margin-bottom: 14px;
 }
+.stats-bar:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.sb-item { flex: 1; text-align: center; }
+.sb-num { display: block; font-size: 24px; font-weight: 800; color: var(--primary); }
+.sb-label { font-size: 12px; color: var(--text-light); }
+.sb-divider { width: 1px; height: 36px; background: rgba(91,155,213,0.2); }
+
+/* ---- 导航栏（紧凑） ---- */
+.nav {
+  display: flex; gap: 2px; margin-bottom: 20px; padding: 3px;
+  background: var(--card-bg); border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm); overflow-x: auto;
+  -webkit-overflow-scrolling: touch; width: fit-content;
+}
+.nav a {
+  position: relative; text-decoration: none; color: var(--text-light);
+  padding: 6px 14px; border-radius: var(--radius-full);
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  transition: all var(--transition);
+}
+.nav a:hover { color: var(--text); background: var(--bg); }
+.nav a.router-link-active {
+  color: #fff; background: var(--primary);
+  box-shadow: 0 2px 6px rgba(91,155,213,0.35);
+}
+.nav-badge { position: absolute; top: 0; right: 2px; background: var(--danger); color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 8px; min-width: 14px; text-align: center; line-height: 14px; }
+
+.cart-float {
+  position: fixed; right: 24px; bottom: 24px; z-index: 50;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--primary-grad); box-shadow: 0 4px 20px rgba(91,155,213,0.4);
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; transition: all var(--transition);
+  animation: floatIn 0.3s ease;
+}
+.cart-float:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(91,155,213,0.5); }
+.cart-float-icon { font-size: 24px; }
+.cart-float-badge {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--danger); color: #fff; font-size: 11px; font-weight: 700;
+  min-width: 20px; height: 20px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; padding: 0 4px;
+}
+@keyframes floatIn { from { opacity: 0; transform: translateY(12px) scale(0.8); } }
+
+.page-enter-active, .page-leave-active { transition: opacity 0.18s ease, transform 0.18s ease; }
 .page-enter-from { opacity: 0; transform: translateY(6px); }
 .page-leave-to { opacity: 0; transform: translateY(-4px); }
 
-/* ====== 平板 ====== */
 @media (max-width: 768px) {
-  .app {
-    padding: 20px 16px 48px;
-  }
-  .nav a {
-    padding: 7px 14px;
-    font-size: 13px;
-  }
+  .app { padding: 20px 16px 48px; }
+  .sb-num { font-size: 20px; }
+  .stats-bar { padding: 16px 10px; }
+  .nav a { padding: 5px 10px; font-size: 12px; }
 }
-
-/* ====== 手机 ====== */
 @media (max-width: 480px) {
-  .app {
-    padding: 14px 10px 40px;
-  }
+  .app { padding: 14px 10px 40px; }
   .header h1 { font-size: 18px; }
-  .subtitle { display: none; }
-  .nav {
-    gap: 0;
-    margin: 12px 0 18px;
-  }
-  .nav a {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
+  .sb-num { font-size: 16px; }
+  .sb-label { font-size: 10px; }
+  .stats-bar { padding: 12px 6px; }
+  .nav { margin-bottom: 16px; }
+  .nav a { padding: 5px 8px; font-size: 12px; }
 }
 </style>
