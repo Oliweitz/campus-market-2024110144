@@ -60,13 +60,16 @@ function goMessage() {
 
 <template>
   <section>
-    <div class="breadcrumb">
-      <router-link to="/">首页</router-link>
-      <span>/</span>
-      <router-link to="/list">列表</router-link>
-      <span>/</span>
-      <span v-if="product">{{ TYPE_LABELS[product.type] }}</span>
-      <span v-else>详情</span>
+    <div class="top-bar">
+      <button class="back-btn" @click="router.back()">&larr;</button>
+      <div class="breadcrumb">
+        <router-link to="/">首页</router-link>
+        <span>/</span>
+        <router-link to="/list">列表</router-link>
+        <span>/</span>
+        <span v-if="product">{{ TYPE_LABELS[product.type] }}</span>
+        <span v-else>详情</span>
+      </div>
     </div>
 
     <template v-if="product">
@@ -194,9 +197,12 @@ function goMessage() {
 </template>
 
 <style scoped>
+.top-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
 .breadcrumb {
   display: flex; align-items: center; gap: 6px; font-size: var(--font-sm);
-  color: var(--text-lighter); margin-bottom: 14px;
+  color: var(--text-lighter);
 }
 .breadcrumb a { text-decoration: none; color: var(--text-light); }
 .breadcrumb a:hover { color: var(--primary); }

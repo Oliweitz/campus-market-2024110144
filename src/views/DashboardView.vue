@@ -30,24 +30,26 @@ const maxC = computed(() => Math.max(...campusStats.value.map(c => c.count), 1))
       <div class="sc"><strong>{{ CAMPUS_LIST.length }}</strong><span>覆盖校区</span></div>
     </div>
 
-    <div class="chart-block">
-      <h3>类型占比</h3>
-      <div class="bars">
-        <div v-for="t in typeStats" :key="t.label" class="bar-row">
-          <span class="bar-label">{{ t.label }}</span>
-          <div class="bar-track"><div class="bar-fill" :style="{ width: (t.count / maxT * 100) + '%' }"></div></div>
-          <span class="bar-val">{{ t.count }}</span>
+    <div class="charts-row">
+      <div class="chart-block">
+        <h3>类型占比</h3>
+        <div class="bars">
+          <div v-for="t in typeStats" :key="t.label" class="bar-row">
+            <span class="bar-label">{{ t.label }}</span>
+            <div class="bar-track"><div class="bar-fill" :style="{ width: (t.count / maxT * 100) + '%' }"></div></div>
+            <span class="bar-val">{{ t.count }}</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="chart-block">
-      <h3>校区分布</h3>
-      <div class="bars">
-        <div v-for="c in campusStats" :key="c.label" class="bar-row">
-          <span class="bar-label">{{ c.label }}</span>
-          <div class="bar-track"><div class="bar-fill bar-green" :style="{ width: (c.count / maxC * 100) + '%' }"></div></div>
-          <span class="bar-val">{{ c.count }}</span>
+      <div class="chart-block">
+        <h3>校区分布</h3>
+        <div class="bars">
+          <div v-for="c in campusStats" :key="c.label" class="bar-row">
+            <span class="bar-label">{{ c.label }}</span>
+            <div class="bar-track"><div class="bar-fill bar-green" :style="{ width: (c.count / maxC * 100) + '%' }"></div></div>
+            <span class="bar-val">{{ c.count }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -66,7 +68,7 @@ const maxC = computed(() => Math.max(...campusStats.value.map(c => c.count), 1))
 </template>
 
 <style scoped>
-.dash { max-width: 640px; }
+.dash { }
 .page-title { font-size: 18px; font-weight: 600; margin: 0 0 18px; color: var(--text); }
 
 .stat-cards { display: flex; gap: 10px; margin-bottom: 22px; }
@@ -77,7 +79,9 @@ const maxC = computed(() => Math.max(...campusStats.value.map(c => c.count), 1))
 .sc strong { display: block; font-size: 22px; font-weight: 700; color: var(--primary); }
 .sc span { font-size: 12px; color: var(--text-light); margin-top: 4px; display: block; }
 
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .chart-block { margin-bottom: 22px; }
+@media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
 .chart-block h3 { font-size: 14px; font-weight: 600; margin: 0 0 10px; }
 
 .bars { display: flex; flex-direction: column; gap: 8px; }

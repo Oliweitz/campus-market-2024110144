@@ -122,12 +122,14 @@ function goPage(p: number) {
 }
 .search-input:focus { box-shadow: 0 0 0 2px var(--primary-light); }
 .pill {
-  padding: 9px 10px; border: none; border-radius: var(--radius-full);
+  width: 88px; padding: 9px 24px 9px 10px; border: none; border-radius: var(--radius-full);
   background: var(--card-bg); box-shadow: var(--shadow-sm); font-size: 13px;
   color: var(--text); outline: none; cursor: pointer; transition: all var(--transition);
-  white-space: nowrap;
+  white-space: nowrap; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c0c0c0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
 }
-.pill-sm { padding: 9px 8px; font-size: 12px; }
+.pill-sm { width: 72px; padding: 9px 20px 9px 8px; font-size: 12px; background-position: right 6px center; }
 .pill:focus { box-shadow: 0 0 0 2px var(--primary-light); }
 
 .list { display: flex; flex-direction: column; gap: 10px; }
