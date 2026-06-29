@@ -152,6 +152,10 @@ export const useUserStore = defineStore('user', () => {
     currentUserId.value = null
     clearAuth()
     error.value = null
+    // 清除消息本地缓存（保护隐私）
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('campus_market_msg_')) localStorage.removeItem(k)
+    })
   }
 
   /** 更新用户信息 */

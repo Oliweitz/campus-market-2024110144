@@ -62,7 +62,7 @@
       ],
       "publisherId": 1,
       "status": "进行中",
-      "viewCount": 134,
+      "viewCount": 135,
       "favoriteCount": 5,
       "createdAt": "2026-06-25 10:00:00",
       "updatedAt": "2026-06-25 10:00:00",
@@ -186,7 +186,7 @@
       ],
       "publisherId": 2,
       "status": "进行中",
-      "viewCount": 157,
+      "viewCount": 162,
       "favoriteCount": 6,
       "createdAt": "2026-06-27 12:00:00",
       "updatedAt": "2026-06-27 12:00:00",
@@ -306,7 +306,7 @@
       ],
       "publisherId": 1,
       "status": "进行中",
-      "viewCount": 56,
+      "viewCount": 57,
       "favoriteCount": 2,
       "createdAt": "2026-06-27 14:00:00",
       "updatedAt": "2026-06-28T06:53:44.860Z",
@@ -330,7 +330,7 @@
       ],
       "publisherId": 2,
       "status": "进行中",
-      "viewCount": 23,
+      "viewCount": 24,
       "favoriteCount": 0,
       "createdAt": "2026-06-27 20:00:00",
       "updatedAt": "2026-06-27 20:00:00",
@@ -354,7 +354,7 @@
       ],
       "publisherId": 3,
       "status": "进行中",
-      "viewCount": 95,
+      "viewCount": 98,
       "favoriteCount": 3,
       "createdAt": "2026-06-28 08:00:00",
       "updatedAt": "2026-06-28T06:36:46.978Z",
@@ -548,7 +548,7 @@
       ],
       "publisherId": 3,
       "status": "进行中",
-      "viewCount": 20,
+      "viewCount": 28,
       "favoriteCount": 0,
       "createdAt": "2026-06-28 17:00:00",
       "updatedAt": "2026-06-28 17:00:00",
@@ -570,7 +570,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 2,
+      "viewCount": 12,
       "favoriteCount": 0,
       "createdAt": "2026-06-29 10:30:34",
       "updatedAt": "2026-06-29 10:30:34",
@@ -610,6 +610,12 @@
       "itemId": "1",
       "createdAt": "2026-06-29T01:37:02.592Z",
       "id": "pA2Kin2ZpMY"
+    },
+    {
+      "userId": "1",
+      "itemId": "11",
+      "createdAt": "2026-06-29T03:11:21.099Z",
+      "id": "9EJxIiT5qz0"
     }
   ],
   "conversations": [
@@ -630,40 +636,49 @@
       ],
       "lastMessage": "什么时候方便？",
       "updatedAt": "2026-06-27 16:30:00"
+    },
+    {
+      "id": "3",
+      "participants": [
+        2,
+        3
+      ],
+      "lastMessage": "",
+      "updatedAt": "2026-06-27 16:30:00"
     }
   ],
   "messages": [
     {
       "id": "1",
-      "conversationId": 1,
+      "conversationId": "1",
       "senderId": 1,
       "text": "你好，这本书还在吗？",
       "createdAt": "2026-06-27 14:55:00"
     },
     {
       "id": "2",
-      "conversationId": 1,
+      "conversationId": "1",
       "senderId": 2,
       "text": "还在的，可以来看看。",
       "createdAt": "2026-06-27 14:58:00"
     },
     {
       "id": "3",
-      "conversationId": 1,
+      "conversationId": "1",
       "senderId": 1,
       "text": "还在吗？",
       "createdAt": "2026-06-27 15:00:00"
     },
     {
       "id": "4",
-      "conversationId": 2,
+      "conversationId": "2",
       "senderId": 1,
       "text": "键盘能便宜点吗？",
       "createdAt": "2026-06-27 16:25:00"
     },
     {
       "id": "5",
-      "conversationId": 2,
+      "conversationId": "2",
       "senderId": 3,
       "text": "什么时候方便？",
       "createdAt": "2026-06-27 16:30:00"

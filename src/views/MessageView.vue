@@ -9,17 +9,21 @@ const route = useRoute()
 const msgStore = useMessageStore()
 const userStore = useUserStore()
 const activeUserId = ref<number | null>(null)
-const activeConvId = ref<number | null>(null)
+const activeConvId = ref<string | number | null>(null)
 
 const contact = computed(() => msgStore.contactList.find((c) => c.userId === activeUserId.value))
 const chatMsgs = computed(() => (activeConvId.value ? msgStore.getChatMessages(activeConvId.value) : []))
 
-watch(() => route.query.to, (name) => {
-  if (name && typeof name === 'string') {
-    const uid = name === '张三' ? 1 : name === '李四' ? 2 : name === '王五' ? 3 : 0
+watch(() => route.query.uid, (uidStr) => {
+  if (uidStr && typeof uidStr === 'string') {
+    const uid = Number(uidStr)
     if (uid) activeUserId.value = uid
   }
 }, { immediate: true })
+
+watch(activeUserId, (uid) => {
+  if (uid) selectContact(uid)
+})
 
 watch(() => msgStore.contactList.length, () => {
   if (!activeUserId.value && msgStore.contactList.length > 0) activeUserId.value = msgStore.contactList[0]!.userId
@@ -27,8 +31,17 @@ watch(() => msgStore.contactList.length, () => {
 
 async function selectContact(userId: number) {
   activeUserId.value = userId
-  const conv = msgStore.conversations.find((c) => c.participants.some((p) => p == userId))
-  if (conv) { activeConvId.value = conv.id as number; await msgStore.fetchMessages(conv.id as number); await msgStore.markRead(conv.id as number) }
+  let conv = msgStore.conversations.find((c) =>
+    c.participants.some((p: string | number) => String(p) === String(userId))
+  )
+  if (!conv) {
+    conv = await msgStore.getOrCreateConversation(userId)
+  }
+  if (conv) {
+    activeConvId.value = conv.id
+    await msgStore.fetchMessages(conv.id)
+    await msgStore.markRead(conv.id)
+  }
 }
 
 async function handleSend(text: string) {
@@ -38,7 +51,12 @@ async function handleSend(text: string) {
 
 onMounted(async () => {
   await msgStore.fetchConversations()
-  if (activeUserId.value) await selectContact(activeUserId.value)
+  if (activeUserId.value) {
+    await selectContact(activeUserId.value)
+  } else if (msgStore.contactList.length > 0) {
+    // 自动选中第一个联系人
+    activeUserId.value = msgStore.contactList[0]!.userId
+  }
 })
 </script>
 

@@ -8,6 +8,7 @@ import { useMyListStore } from '@/stores/mylist'
 import { useMessageStore } from '@/stores/messageStore'
 import { useCartStore } from '@/stores/cart'
 import { TYPE_LABELS, STATUS_LABELS, LOST_FOUND_LABELS } from '@/data/listings'
+import { userApi } from '@/api/userApi'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 import BargainPanel from '@/components/BargainPanel.vue'
 
@@ -30,11 +31,20 @@ const related = computed(() => itemStore.items.filter((l) => l.type === product.
 const bargainShow = ref(false)
 const reported = ref(false)
 
-const publisherName = computed(() => {
-  const pid = product.value?.publisherId
-  if (!pid) return ''; const map: Record<number, string> = { 1: '张三', 2: '李四', 3: '王五' }
-  return map[pid as number] ?? `用户${pid}`
-})
+const publisherName = ref('')
+
+async function loadPublisherName(pid: string | number) {
+  if (userStore.profile?.id == pid) {
+    publisherName.value = userStore.nickname || '我'
+    return
+  }
+  try {
+    const res = await userApi.getUserById(pid as number)
+    publisherName.value = res.data?.nickname || `用户${pid}`
+  } catch {
+    publisherName.value = `用户${pid}`
+  }
+}
 
 function handleAddToCart() {
   if (!product.value || product.value.price == null) return
@@ -48,7 +58,14 @@ async function handleBargain(price: string) {
   router.push('/message')
 }
 
-async function goMessage() { if (product.value) router.push('/message') }
+function goMessage() {
+  if (!product.value) return
+  if (isOwner.value) {
+    router.push('/profile')
+  } else {
+    router.push('/message?uid=' + product.value.publisherId)
+  }
+}
 
 async function handleJoinGroup() {
   if (!product.value) return
@@ -62,7 +79,10 @@ async function handleTakeErrand() {
 
 onMounted(async () => {
   if (!product.value) await itemStore.fetchById(productId.value)
-  if (product.value) itemStore.incrementView(product.value.id as number)
+  if (product.value) {
+    itemStore.incrementView(product.value.id as number)
+    loadPublisherName(product.value.publisherId)
+  }
 })
 </script>
 
@@ -92,7 +112,10 @@ onMounted(async () => {
         <img v-for="(img, idx) in product.images" :key="idx" :src="img" class="detail-img" alt="" />
       </div>
       <div class="meta-line"><span>{{ product.campus }} &middot; {{ product.location }}</span><span>👁 {{ product.viewCount }} &middot; {{ product.createdAt.slice(0, 10) }}</span></div>
-      <p class="poster">发布者 <a class="link" @click.prevent="goMessage">{{ publisherName }}</a></p>
+      <p class="poster">
+        <template v-if="isOwner">由你发布</template>
+        <template v-else>发布者 <a class="link" @click.prevent="goMessage">{{ publisherName }}</a></template>
+      </p>
       <p class="desc">{{ product.description }}</p>
 
       <template v-if="product.type === 'secondhand'">
