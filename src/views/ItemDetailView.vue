@@ -88,6 +88,9 @@ onMounted(async () => {
         <span v-else class="reported-tip">已提交</span>
       </div>
 
+      <div v-if="product.images?.length" class="image-strip">
+        <img v-for="(img, idx) in product.images" :key="idx" :src="img" class="detail-img" alt="" />
+      </div>
       <div class="meta-line"><span>{{ product.campus }} &middot; {{ product.location }}</span><span>👁 {{ product.viewCount }} &middot; {{ product.createdAt.slice(0, 10) }}</span></div>
       <p class="poster">发布者 <a class="link" @click.prevent="goMessage">{{ publisherName }}</a></p>
       <p class="desc">{{ product.description }}</p>
@@ -179,6 +182,8 @@ onMounted(async () => {
 .s-active { background: var(--success-light); color: var(--success); } .s-completed { background: #f0f0f0; color: #bbb; } .s-closed { background: var(--danger-light); color: var(--danger); }
 .meta-line { display: flex; gap: 12px; margin-top: 12px; font-size: 13px; color: var(--text-light); }
 .poster { font-size: 14px; margin-top: 6px; color: var(--text-light); } .link { color: var(--primary); cursor: pointer; font-weight: 500; } .link:hover { text-decoration: underline; }
+.image-strip { display: flex; gap: 10px; margin-top: 16px; overflow-x: auto; }
+.detail-img { width: 240px; height: 160px; object-fit: cover; border-radius: 10px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
 .desc { margin-top: 14px; line-height: 1.8; color: var(--text); font-size: 14px; }
 .highlight { font-size: 22px; font-weight: 700; color: var(--danger); margin-top: 16px; } .hl-sub { font-size: 14px; font-weight: 400; color: var(--text-light); }
 .aux { margin-top: 6px; font-size: 14px; color: var(--text-light); }

@@ -9,6 +9,11 @@ defineProps<{ item: Item }>()
 <template>
   <div class="list-card">
     <router-link :to="'/detail/' + item.id" class="card-body">
+      <div class="card-img-wrap">
+        <img v-if="item.images?.[0]" :src="item.images[0]" class="card-thumb" alt="" />
+        <div v-else class="card-thumb-fb" :class="'fb-' + item.type"></div>
+      </div>
+      <div class="card-content">
       <div class="card-top">
         <strong>{{ item.title }}</strong>
         <span class="status-dot" :class="'dot-' + (item.status === '进行中' ? 'active' : item.status === '已完成' ? 'completed' : 'closed')"></span>
@@ -26,6 +31,7 @@ defineProps<{ item: Item }>()
         <span>👁 {{ item.viewCount }}</span>
         <span class="card-time">{{ item.createdAt.slice(0, 10) }}</span>
       </div>
+      </div>
     </router-link>
     <FavoriteButton :item-id="item.id" />
   </div>
@@ -34,7 +40,15 @@ defineProps<{ item: Item }>()
 <style scoped>
 .list-card { display: flex; align-items: stretch; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: all var(--transition); overflow: hidden; }
 .list-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.card-body { flex: 1; padding: 14px 16px; text-decoration: none; color: var(--text); }
+.card-body { flex: 1; display: flex; gap: 14px; padding: 14px 16px; text-decoration: none; color: var(--text); align-items: center; }
+.card-img-wrap { width: 80px; height: 60px; flex-shrink: 0; border-radius: 8px; overflow: hidden; }
+.card-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-thumb-fb { width: 100%; height: 100%; }
+.fb-secondhand { background: linear-gradient(135deg, #c8e6c9, #a5d6a7); }
+.fb-lostfound { background: linear-gradient(135deg, #bbdefb, #90caf9); }
+.fb-group { background: linear-gradient(135deg, #e1bee7, #ce93d8); }
+.fb-errand { background: linear-gradient(135deg, #ffccbc, #ffab91); }
+.card-content { flex: 1; min-width: 0; }
 .card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .card-top strong { font-size: 15px; font-weight: 600; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }

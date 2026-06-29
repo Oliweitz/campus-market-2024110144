@@ -1,11 +1,18 @@
 <template>
   <article class="item-card">
-    <div class="item-card__header">
-      <h3>{{ title }}</h3>
-      <span v-if="tag" class="tag">{{ tag }}</span>
+    <div class="item-card__top">
+      <div class="item-card__img">
+        <img v-if="image" :src="image" alt="" />
+        <div v-else class="img-fb"></div>
+      </div>
+      <div class="item-card__main">
+        <div class="item-card__header">
+          <h3>{{ title }}</h3>
+          <span v-if="tag" class="tag">{{ tag }}</span>
+        </div>
+        <p class="description">{{ description }}</p>
+      </div>
     </div>
-
-    <p class="description">{{ description }}</p>
 
     <div class="meta">
       <span v-if="location">📍 {{ location }}</span>
@@ -25,6 +32,7 @@ defineProps<{
   tag?: string
   location?: string
   time?: string
+  image?: string
 }>()
 </script>
 
@@ -42,6 +50,17 @@ defineProps<{
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
+
+.item-card__top { display: flex; gap: 14px; }
+
+.item-card__img {
+  width: 100px; height: 75px; flex-shrink: 0;
+  border-radius: 8px; overflow: hidden; background: #f0f0f0;
+}
+.item-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-fb { width: 100%; height: 100%; background: linear-gradient(135deg, #e8f0fe, #d2e3fc); }
+
+.item-card__main { flex: 1; min-width: 0; }
 
 .item-card__header {
   display: flex;

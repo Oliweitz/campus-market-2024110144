@@ -23,6 +23,7 @@ const lostOrFound = ref<LostOrFound>('lost'); const eventTime = ref(''); const i
 const targetCount = ref(2); const deadline = ref('')
 const reward = ref(''); const taskPlace = ref(''); const expectedTime = ref('')
 
+const images = ref(['', '', ''])
 const submitted = ref(false)
 const errors = ref<string[]>([])
 
@@ -36,7 +37,7 @@ async function handleSubmit() {
     type: infoType.value, title: title.value.trim(), description: description.value.trim(),
     campus: campus.value, location: location.value,
     tags: tags.value ? tags.value.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
-    images: [], publisherId: userStore.currentUserId!,
+    images: images.value.filter(u => u.trim()), publisherId: userStore.currentUserId!,
     status: '进行中', viewCount: 0, favoriteCount: 0, createdAt: nowStr, updatedAt: nowStr,
   }
 
@@ -78,6 +79,15 @@ async function handleSubmit() {
         <div class="fg fg-half"><label>地点</label><input v-model="location" placeholder="具体地点" class="in" /></div>
       </div>
       <div class="fg"><label>标签 (逗号分隔)</label><input v-model="tags" placeholder="教材, 前端" class="in" /></div>
+
+      <div class="fg"><label>图片 (粘贴图片 URL，最多3张)</label>
+        <div class="img-inputs">
+          <input v-for="(_, idx) in images" :key="idx" v-model="images[idx]" :placeholder="'图片链接 ' + (idx + 1)" class="in img-url" />
+        </div>
+        <div v-if="images.some(u => u.trim())" class="img-previews">
+          <img v-for="(url, idx) in images.filter(u => u.trim()).slice(0, 3)" :key="idx" :src="url" class="preview-thumb" @error="$event.target.style.display='none'" alt="" />
+        </div>
+      </div>
 
       <template v-if="infoType === 'secondhand'">
         <div class="fg-row">
@@ -144,4 +154,9 @@ async function handleSubmit() {
 .login-required p { margin: 0 0 16px; font-size: 15px; color: var(--text-light); }
 .to-login { display: inline-block; padding: 10px 32px; background: var(--primary); color: #fff; text-decoration: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 500; transition: all var(--transition); }
 .to-login:hover { box-shadow: 0 4px 12px rgba(91,155,213,0.35); }
+
+.img-inputs { display: flex; flex-direction: column; gap: 6px; }
+.img-url { font-size: 13px !important; }
+.img-previews { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; }
+.preview-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e0e0e0; }
 </style>

@@ -57,10 +57,12 @@
         "教材",
         "前端"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market1/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
-      "viewCount": 133,
+      "viewCount": 134,
       "favoriteCount": 5,
       "createdAt": "2026-06-25 10:00:00",
       "updatedAt": "2026-06-25 10:00:00",
@@ -80,7 +82,9 @@
         "家具",
         "宿舍"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market2/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 69,
@@ -103,7 +107,9 @@
         "数码",
         "外设"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market3/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
       "viewCount": 213,
@@ -126,10 +132,12 @@
         "生活",
         "宿舍"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market4/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
-      "viewCount": 48,
+      "viewCount": 49,
       "favoriteCount": 1,
       "createdAt": "2026-06-23 16:00:00",
       "updatedAt": "2026-06-23 16:00:00",
@@ -149,7 +157,9 @@
         "钱包",
         "证件"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market5/400/300"
+      ],
       "publisherId": 1,
       "status": "已完成",
       "viewCount": 91,
@@ -171,7 +181,9 @@
         "耳机",
         "数码"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market6/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 157,
@@ -193,7 +205,9 @@
         "校园卡",
         "证件"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market7/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
       "viewCount": 34,
@@ -215,10 +229,12 @@
         "奶茶",
         "外卖"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market8/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
-      "viewCount": 79,
+      "viewCount": 80,
       "favoriteCount": 4,
       "createdAt": "2026-06-27 10:00:00",
       "updatedAt": "2026-06-27 10:00:00",
@@ -237,7 +253,9 @@
         "学习",
         "期末"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market9/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 112,
@@ -259,7 +277,9 @@
         "教材",
         "团购"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market10/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
       "viewCount": 200,
@@ -281,7 +301,9 @@
         "快递",
         "代取"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market11/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
       "viewCount": 56,
@@ -303,7 +325,9 @@
         "早餐",
         "代买"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market12/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 23,
@@ -325,7 +349,9 @@
         "打印",
         "急"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market13/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
       "viewCount": 95,
@@ -347,7 +373,9 @@
         "出行",
         "自行车"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market14/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
       "viewCount": 67,
@@ -370,7 +398,9 @@
         "教材",
         "英语"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market15/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 43,
@@ -393,7 +423,9 @@
         "雨伞",
         "生活"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market16/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 38,
@@ -415,7 +447,9 @@
         "U盘",
         "数码"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market17/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
       "viewCount": 86,
@@ -437,7 +471,9 @@
         "火锅",
         "拼餐"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market18/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
       "viewCount": 55,
@@ -459,7 +495,9 @@
         "运动",
         "羽毛球"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market19/400/300"
+      ],
       "publisherId": 1,
       "status": "进行中",
       "viewCount": 72,
@@ -481,7 +519,9 @@
         "搬运",
         "体力"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market20/400/300"
+      ],
       "publisherId": 2,
       "status": "进行中",
       "viewCount": 41,
@@ -503,16 +543,41 @@
         "代买",
         "晚餐"
       ],
-      "images": [],
+      "images": [
+        "https://picsum.photos/seed/market21/400/300"
+      ],
       "publisherId": 3,
       "status": "进行中",
-      "viewCount": 19,
+      "viewCount": 20,
       "favoriteCount": 0,
       "createdAt": "2026-06-28 17:00:00",
       "updatedAt": "2026-06-28 17:00:00",
       "reward": 5,
       "taskPlace": "实验楼302",
       "expectedTime": "今天18:30前"
+    },
+    {
+      "type": "group",
+      "title": "寻找旅行搭子",
+      "description": "如题，去川西自驾游7天",
+      "campus": "南校区",
+      "location": "大门",
+      "tags": [
+        "旅游，拼单，搭子，川西"
+      ],
+      "images": [
+        "https://picsum.photos/seed/market1/400/300"
+      ],
+      "publisherId": "1",
+      "status": "进行中",
+      "viewCount": 2,
+      "favoriteCount": 0,
+      "createdAt": "2026-06-29 10:30:34",
+      "updatedAt": "2026-06-29 10:30:34",
+      "targetCount": 2,
+      "currentCount": 1,
+      "deadline": "2026-06-25",
+      "id": "8hOWC8pbP3E"
     }
   ],
   "favorites": [
@@ -637,7 +702,7 @@
       "location": "图书馆",
       "publisher": "张三",
       "publishTime": "2026-06-25 10:00",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "几乎全新，仅翻阅过前两章，无笔记无折痕。适合前端入门同学。"
     },
@@ -650,7 +715,7 @@
       "location": "北区宿舍",
       "publisher": "李四",
       "publishTime": "2026-06-24 14:00",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "桌面平整，折叠方便，不占空间。"
     },
@@ -663,7 +728,7 @@
       "location": "教学楼A",
       "publisher": "王五",
       "publishTime": "2026-06-26 09:00",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "全键无冲，RGB背光，使用半年，手感极佳。"
     },
@@ -676,7 +741,7 @@
       "location": "东区宿舍",
       "publisher": "张三",
       "publishTime": "2026-06-23 16:00",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "三档亮度，无频闪，宿舍学习用。"
     },
@@ -689,7 +754,7 @@
       "location": "南校区车棚",
       "publisher": "张三",
       "publishTime": "2026-06-24 11:30",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "变速正常，刹车灵敏，适合校内通勤。送一把车锁。"
     },
@@ -702,7 +767,7 @@
       "location": "教学楼B区",
       "publisher": "李四",
       "publishTime": "2026-06-25 08:45",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1603575448878-868a20723f5d?w=400&h=300&fit=crop",
       "status": "open",
       "description": "只做过一套题，其余全新。附听力光盘。"
     }
@@ -717,7 +782,8 @@
       "eventTime": "2026-06-26",
       "contact": "站内消息联系",
       "status": "done",
-      "description": "内有身份证、校园卡，在图书馆三楼阅览室遗失。"
+      "description": "内有身份证、校园卡，在图书馆三楼阅览室遗失。",
+      "image": ""
     },
     {
       "id": "6",
@@ -728,7 +794,8 @@
       "eventTime": "2026-06-27",
       "contact": "站内消息联系",
       "status": "open",
-      "description": "操场跑道边拾到，外观完好。"
+      "description": "操场跑道边拾到，外观完好。",
+      "image": ""
     },
     {
       "id": "7",
@@ -739,7 +806,8 @@
       "eventTime": "2026-06-26",
       "contact": "站内消息联系",
       "status": "open",
-      "description": "一食堂附近丢失，学号末尾4144。"
+      "description": "一食堂附近丢失，学号末尾4144。",
+      "image": ""
     },
     {
       "id": "16",
@@ -750,7 +818,8 @@
       "eventTime": "2026-06-23",
       "contact": "站内消息联系",
       "status": "open",
-      "description": "雨伞放在A区一楼值班室，请失主前往认领。"
+      "description": "雨伞放在A区一楼值班室，请失主前往认领。",
+      "image": ""
     },
     {
       "id": "17",
@@ -761,7 +830,8 @@
       "eventTime": "2026-06-26",
       "contact": "站内消息联系",
       "status": "open",
-      "description": "32G银色U盘，内有课程设计和实验报告，非常紧急！"
+      "description": "32G银色U盘，内有课程设计和实验报告，非常紧急！",
+      "image": ""
     }
   ],
   "groupBuys": [
@@ -775,7 +845,8 @@
       "location": "南门奶茶店",
       "publisher": "张三",
       "status": "open",
-      "description": "一起凑外卖满减，人均15元左右，还差2人。"
+      "description": "一起凑外卖满减，人均15元左右，还差2人。",
+      "image": ""
     },
     {
       "id": "9",
@@ -787,7 +858,8 @@
       "location": "图书馆",
       "publisher": "李四",
       "status": "open",
-      "description": "找3人一起图书馆刷题，互相监督，期末不挂科。"
+      "description": "找3人一起图书馆刷题，互相监督，期末不挂科。",
+      "image": ""
     },
     {
       "id": "10",
@@ -799,7 +871,8 @@
       "location": "教材科",
       "publisher": "王五",
       "status": "open",
-      "description": "团购下学期教材，满10人每人省20元。"
+      "description": "团购下学期教材，满10人每人省20元。",
+      "image": ""
     },
     {
       "id": "18",
@@ -811,7 +884,8 @@
       "location": "学校南门火锅店",
       "publisher": "王五",
       "status": "open",
-      "description": "AA制，人均约40元，人数够后统一预约。"
+      "description": "AA制，人均约40元，人数够后统一预约。",
+      "image": ""
     },
     {
       "id": "19",
@@ -823,7 +897,8 @@
       "location": "体育馆羽毛球场",
       "publisher": "张三",
       "status": "open",
-      "description": "水平不限，主要是锻炼身体，球拍和球我可以提供。"
+      "description": "水平不限，主要是锻炼身体，球拍和球我可以提供。",
+      "image": ""
     }
   ],
   "errands": [
@@ -837,7 +912,8 @@
       "deadline": "今晚20:00前",
       "publisher": "张三",
       "status": "open",
-      "description": "菜鸟驿站取件（中号箱），送到南区宿舍3号楼。"
+      "description": "菜鸟驿站取件（中号箱），送到南区宿舍3号楼。",
+      "image": ""
     },
     {
       "id": "12",
@@ -849,7 +925,8 @@
       "deadline": "明早7:30",
       "publisher": "李四",
       "status": "open",
-      "description": "明早食堂带一份包子+豆浆，送到教学楼B座。"
+      "description": "明早食堂带一份包子+豆浆，送到教学楼B座。",
+      "image": ""
     },
     {
       "id": "13",
@@ -861,7 +938,8 @@
       "deadline": "今天下午16:00前",
       "publisher": "王五",
       "status": "open",
-      "description": "帮打印一份报告并交到教务办公室，急！"
+      "description": "帮打印一份报告并交到教务办公室，急！",
+      "image": ""
     },
     {
       "id": "20",
@@ -873,7 +951,8 @@
       "deadline": "7月2日18:00前",
       "publisher": "李四",
       "status": "open",
-      "description": "两个行李箱加一个被褥袋，从5楼搬到3楼（无电梯），需要力气大一点的同学。"
+      "description": "两个行李箱加一个被褥袋，从5楼搬到3楼（无电梯），需要力气大一点的同学。",
+      "image": ""
     },
     {
       "id": "21",
@@ -885,7 +964,8 @@
       "deadline": "今天18:30前",
       "publisher": "王五",
       "status": "open",
-      "description": "一份盖浇饭加一瓶矿泉水，需要在18:30前送到，做实验走不开。"
+      "description": "一份盖浇饭加一瓶矿泉水，需要在18:30前送到，做实验走不开。",
+      "image": ""
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

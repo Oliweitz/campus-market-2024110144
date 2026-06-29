@@ -28,6 +28,7 @@
             :tag="item.tags?.[0] || ''"
             :location="item.location"
             :time="item.createdAt?.slice(0, 16)"
+            :image="item.images?.[0]"
           >
             <template #footer>
               <div class="card-footer">

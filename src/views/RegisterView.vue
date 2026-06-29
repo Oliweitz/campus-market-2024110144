@@ -74,9 +74,13 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useMessageStore } from '@/stores/messageStore'
 
 const router = useRouter()
 const userStore = useUserStore()
+const favStore = useFavoriteStore()
+const msgStore = useMessageStore()
 
 const form = reactive({
   username: '',
@@ -105,6 +109,10 @@ async function handleRegister() {
     role: form.role,
   })
   if (ok) {
+    await Promise.all([
+      favStore.fetchFavorites(),
+      msgStore.fetchConversations(),
+    ])
     router.push('/')
   }
 }

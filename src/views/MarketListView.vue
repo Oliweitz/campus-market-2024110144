@@ -42,6 +42,7 @@ onMounted(async () => { await itemStore.fetchItems() })
     <h2 class="page-title">校园集市</h2>
     <MarketFilterBar v-model="filters" />
     <div v-if="itemStore.loading" class="empty-state"><p>加载中...</p></div>
+    <div v-else-if="itemStore.error" class="empty-state"><p>{{ itemStore.error }}</p><span>请检查 Mock 服务是否已启动</span></div>
     <template v-else-if="pagedList.length">
       <div class="list"><MarketItemCard v-for="item in pagedList" :key="item.id" :item="item" /></div>
       <div v-if="totalPages > 1" class="pager">

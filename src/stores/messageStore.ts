@@ -66,7 +66,8 @@ export const useMessageStore = defineStore('message', () => {
   }
 
   async function getOrCreateConversation(targetUid: number): Promise<Conversation> {
-    const uid = useUserStore().currentUserId!
+    const uid = useUserStore().currentUserId
+    if (!uid) throw new Error('未登录')
     let conv = conversations.value.find((c) =>
       c.participants.some((p) => p == uid) && c.participants.some((p) => p == targetUid),
     )
@@ -77,7 +78,8 @@ export const useMessageStore = defineStore('message', () => {
   }
 
   async function sendMessage(targetUid: number, text: string, targetNickname?: string) {
-    const uid = useUserStore().currentUserId!
+    const uid = useUserStore().currentUserId
+    if (!uid) return
     if (targetNickname) contactNames.value[targetUid] = targetNickname
 
     const conv = await getOrCreateConversation(targetUid)

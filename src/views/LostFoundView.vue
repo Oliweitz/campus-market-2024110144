@@ -28,6 +28,7 @@
             :tag="item.lostOrFound === 'lost' ? '丢失' : '拾获'"
             :location="item.location"
             :time="item.eventTime"
+            :image="item.images?.[0]"
           >
             <template #footer>
               <div class="card-footer">

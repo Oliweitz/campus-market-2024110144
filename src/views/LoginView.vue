@@ -57,9 +57,13 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useMessageStore } from '@/stores/messageStore'
 
 const router = useRouter()
 const userStore = useUserStore()
+const favStore = useFavoriteStore()
+const msgStore = useMessageStore()
 
 const form = reactive({ username: '', password: '' })
 
@@ -81,6 +85,10 @@ async function handleLogin() {
   }
   const ok = await userStore.login(form.username.trim(), form.password)
   if (ok) {
+    await Promise.all([
+      favStore.fetchFavorites(),
+      msgStore.fetchConversations(),
+    ])
     router.push('/')
   }
 }
