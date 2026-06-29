@@ -6,13 +6,14 @@
       <p>找人一起拼、一起学、一起玩，组团更划算。</p>
     </div>
 
-    <div v-if="itemStore.loading" class="loading-state">
-      <p>加载中...</p>
-    </div>
+    <LoadingState v-if="itemStore.loading" text="正在加载拼单搭子信息..." />
 
-    <template v-else-if="itemStore.error">
-      <EmptyState :text="itemStore.error" hint="请检查 Mock 服务是否已启动" />
-    </template>
+    <ErrorState
+      v-else-if="itemStore.error"
+      :message="itemStore.error"
+      show-retry
+      @retry="itemStore.fetchItems"
+    />
 
     <template v-else-if="items.length > 0">
       <div class="list">
@@ -61,6 +62,8 @@ import { useItemStore } from '@/stores/itemStore'
 import type { Item } from '@/data/listings'
 import ItemCard from '@/components/ItemCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
+import ErrorState from '@/components/ErrorState.vue'
 
 const itemStore = useItemStore()
 
@@ -90,7 +93,6 @@ onMounted(async () => {
 .page-header p { margin: 0; color: var(--text-light); font-size: 14px; }
 .back-btn { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-full); font-size: 13px; color: var(--text-light); cursor: pointer; padding: 6px 16px; margin-bottom: 12px; transition: all var(--transition); }
 .back-btn:hover { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
-.loading-state { text-align: center; padding: 60px 0; color: var(--text-lighter); }
 .list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .card-link { text-decoration: none; color: inherit; display: block; }
 .card-footer { display: flex; align-items: center; gap: 10px; }

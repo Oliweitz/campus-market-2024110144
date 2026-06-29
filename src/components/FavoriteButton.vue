@@ -10,15 +10,28 @@ async function toggle() {
 </script>
 
 <template>
-  <button class="fav-btn" :class="{ active: favStore.isFavorited(itemId) }" @click="toggle">
-    {{ favStore.isFavorited(itemId) ? '★' : '☆' }}
+  <button
+    class="fav-btn"
+    :class="{ active: favStore.isFavorited(itemId) }"
+    :title="favStore.isFavorited(itemId) ? '取消收藏' : '收藏'"
+    @click="toggle"
+  >
+    <span class="fav-icon">{{ favStore.isFavorited(itemId) ? '★' : '☆' }}</span>
+    <span class="fav-text">{{ favStore.isFavorited(itemId) ? '已收藏' : '收藏' }}</span>
   </button>
 </template>
 
 <style scoped>
 .fav-btn {
-  background: none; border: none; font-size: 20px; cursor: pointer;
-  color: var(--warn); padding: 4px; transition: transform var(--transition); flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #f3f4f6; border: none; border-radius: var(--radius-full);
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+  color: #374151; transition: all var(--transition); flex-shrink: 0;
 }
-.fav-btn:hover { transform: scale(1.2); }
+.fav-btn:hover { background: #e5e7eb; }
+.fav-btn.active {
+  background: var(--primary-light); color: var(--primary);
+}
+.fav-icon { font-size: 15px; }
+.fav-text { font-size: 12px; }
 </style>
