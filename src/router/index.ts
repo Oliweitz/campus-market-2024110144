@@ -30,9 +30,9 @@ const router = createRouter({
       component: () => import('@/views/MessageView.vue'),
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/UserCenterView.vue'),
     },
     {
       path: '/dashboard',
@@ -45,13 +45,13 @@ const router = createRouter({
       component: () => import('@/views/TradeView.vue'),
     },
     {
-      path: '/lostfound',
-      name: 'lostfound',
+      path: '/lost-found',
+      name: 'lost-found',
       component: () => import('@/views/LostFoundView.vue'),
     },
     {
-      path: '/groupbuy',
-      name: 'groupbuy',
+      path: '/group-buy',
+      name: 'group-buy',
       component: () => import('@/views/GroupBuyView.vue'),
     },
     {

@@ -117,6 +117,27 @@
 - **修改**：type 值从旧命名改为 secondhand/lostfound/group/errand，字段从 desc/poster/publishTime 改为 description/publisherId/createdAt
 - **结论**：数据建模是架构升级的基石，字段一旦定下来后续改动成本低
 
+#### 16a. 我的设计与 AI 设计的对比
+
+Day3 实训手册要求对「我的设计」和「AI 设计」做明确比较。AI 初版生成的 Mock 数据在字段完整性上做得不错，但在业务贴合度上有明显差距：
+
+**AI 生成的问题**：
+- 数据内容泛化——出现了「手机壳」「充电宝」等通用电商词汇，缺乏校园场景感
+- 拼单数据缺少 `currentCount` 字段的合理初始值，全部写 0
+- 跑腿委托把 `from`/`to` 简单写成了「校内」「校外」，没有具体楼栋名称
+
+**我的判断和修改**：
+- 全部替换为校园常见场景：教材交易、台灯、自行车、快递代取、拼餐、羽毛球搭子、搬宿舍行李等
+- 二手交易的 `price` 和 `condition` 是买家决策的核心——手册要求这组字段，但 AI 初版缺失了 `condition`
+- 失物招领的 `type` 字段用于区分「丢失」和「拾获」——这两个场景的语义完全不同，不能用同一个字段值表示
+- 拼单的 `targetCount` 和 `currentCount` 必须配套出现——有了目标人数才能算进度
+- 跑腿委托的 `from`/`to` 描述取送路线——这是接单人判断是否顺路的关键信息
+
+**最终保留的 AI 贡献**：
+- 六类资源的关系结构（users→items→favorites / conversations→messages）设计合理，直接采用
+- JSON Server 的启动脚本和 Vite proxy 配置一次性正确
+- 示例数据的字段覆盖度够用，只需要调整内容而非增加字段
+
 ### 17. API 层与 Store 重构
 
 - **Prompt**：创建 Axios 封装层和 5 个领域 API 模块，将 7 个 Pinia Store 从内存操作改为 API 驱动
@@ -147,4 +168,30 @@
 
 ---
 
-> 后续协作记录按此格式追加。
+### 21. 数据模型收敛：废弃独立集合
+
+- **Prompt**：项目中有两套数据模型并存（`items` 统一集合 + `trades`/`lostFounds`/`groupBuys`/`errands` 独立集合），分析是否应该合并
+- **AI 输出**：确认四个独立集合在 `src/` 中零引用，全部视图通过 `itemStore` 过滤 `items` 获取数据。建议删除独立集合和对应的四个 API 文件
+- **修改**：删除了 `db.json` 中 21 条冗余数据记录，废弃 `trade.ts`/`lostFound.ts`/`groupBuy.ts`/`errand.ts` 四个 API 文件
+- **结论**：全局 grep 确认零引用后再删除，这是安全保障的关键步骤
+
+### 22. 命名与结构对齐
+
+- **Prompt**：对照 Day3-Day5 实训手册，检查项目命名和目录结构差异
+- **AI 输出**：列出 8 处命名差异：`request.ts→http.ts`、`userStore.ts→user.ts`、`favoriteStore.ts→favorite.ts`、`ProfileView.vue→UserCenterView.vue`、路由 `/lostfound→/lost-found`、`/groupbuy→/group-buy`、`/profile→/user`
+- **修改**：逐文件重命名并批量更新所有 import 引用（共涉及 18 处跨文件修改），类型检查和构建双重验证确保无遗漏
+- **结论**：重命名是高风险操作，必须用类型检查兜底
+
+### 23. 组件抽取与 PublishForm 重写
+
+- **Prompt**：将 App.vue 中的 header/nav 提取为独立组件，按 Day4 手册要求重写发布表单
+- **AI 输出**：创建 `AppHeader.vue`/`AppNav.vue`/`AppLayout.vue` 三个布局组件。重写 `PublishForm.vue`：按字段错误提示替代数组式 errors、增加价格>0 和人数≥2 等数值校验、补全重置按钮和提交中禁用态、使用 `FormField.vue` 包裹所有表单项
+- **修改**：PublishForm 改动最大——从 160 行的简版重写为 260 行的完整版，发布人从硬编码改为读取 `userStore.nickname`
+- **结论**：表单校验的粒度决定了用户体验的下限，单条错误信息比「请检查表单」有用得多
+
+### 24. 架构决策记录
+
+- **Prompt**：Day3 实训手册要求四个独立数据集合，技术架构文档要求统一 `items` 集合，如何选择？
+- **AI 输出**：两条路线的差异分析——独立模型让四类业务 API 边界清晰，统一模型让跨类型列表和数据看板天然支持
+- **修改**：最终选择统一模型。依据有三：1) Day3 实际开发中已验证独立模型导致列表页与专属页数据不一致；2) Git 提交 `e206cfb` 记录了向 Level 2 架构的迁移；3) `src/data/listings.ts` 注释明确写「与架构文档对齐」
+- **结论**：文档冲突时，以有实际开发验证证据支撑的方案为准。架构文档是设计意图，Day3 证据是实践结果——后者更具有说服力

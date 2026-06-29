@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/user'
 import { useItemStore } from '@/stores/itemStore'
-import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useFavoriteStore } from '@/stores/favorite'
 import { useMyListStore } from '@/stores/mylist'
 import { useMessageStore } from '@/stores/messageStore'
 import { useCartStore } from '@/stores/cart'
@@ -61,7 +61,7 @@ async function handleBargain(price: string) {
 function goMessage() {
   if (!product.value) return
   if (isOwner.value) {
-    router.push('/profile')
+    router.push('/user')
   } else {
     router.push('/message?uid=' + product.value.publisherId)
   }

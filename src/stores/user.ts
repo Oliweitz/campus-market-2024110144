@@ -208,4 +208,4 @@ export const useUserStore = defineStore('user', () => {
 })
 
 // 顶层 import 供 userStore 内部使用
-import request from '@/api/request'
+import request from '@/api/http'

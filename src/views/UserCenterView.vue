@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/user'
 import { useItemStore } from '@/stores/itemStore'
-import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useFavoriteStore } from '@/stores/favorite'
 import { useMyListStore } from '@/stores/mylist'
 import { useCartStore } from '@/stores/cart'
 import { TYPE_LABELS, STATUS_LABELS, CAMPUS_LIST, type ItemType, type User } from '@/data/listings'

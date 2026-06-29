@@ -2,7 +2,7 @@
 // 校园轻集市 — 消息 API
 // ============================================================
 
-import request from './request'
+import request from './http'
 import type { Conversation, Message } from '@/data/listings'
 
 export const messageApi = {

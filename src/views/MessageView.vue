@@ -2,7 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMessageStore } from '@/stores/messageStore'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/user'
 import ChatBox from '@/components/ChatBox.vue'
 
 const route = useRoute()

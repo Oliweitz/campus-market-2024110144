@@ -134,3 +134,23 @@ Mock 数据建模、接口请求和列表渲染是前端从「静态页面」走
 **数据一致性是页面间互通的基石**——如果不同页面展示的数据来自不同数据源，用户体验会割裂。将四个专属页面接入 Pinia store，利用 `computed` 自动响应变化，既保证了数据一致性，又实现了实时同步。
 
 Day3 的数据结构设计和认证系统为后续 Day4 的发布表单、Day5 的状态管理、Day6 的交互优化和 Day7 的综合验收打下了坚实的基础。
+
+---
+
+## 8. 后续架构收敛
+
+Day3 开发完成后，随着项目推进，发现当初采用的两套数据模型（`items` 统一集合 + 四个独立集合 `trades`/`lostFounds`/`groupBuys`/`errands`）并存带来了维护负担。两套数据虽然在内容上对齐，但字段结构不同，每次修改数据都需要同步两份，容易出错。
+
+因此做了以下收敛：
+
+1. **废弃独立集合**：删除了 `db.json` 中的 `trades`、`lostFounds`、`groupBuys`、`errands` 四个独立集合（共 21 条重复数据），全项目统一使用 `items` 集合，通过 `type` 字段（`secondhand`/`lostfound`/`group`/`errand`）区分四类业务。
+
+2. **API 层简化**：早期创建的四组独立 API 文件（`trade.ts`、`lostFound.ts`、`groupBuy.ts`、`errand.ts`）从未被视图层引用——所有视图在 Day3 重构中已改为通过 Pinia `itemStore` 获取数据。确认零引用后删除了这四个文件，API 层保留 `itemApi.ts`、`userApi.ts`、`favoriteApi.ts`、`messageApi.ts`、`noticeApi.ts` 五个领域模块。
+
+3. **命名统一**：对照实训手册将 Axios 实例文件从 `request.ts` 重命名为 `http.ts`，Store 文件从 `userStore.ts`/`favoriteStore.ts` 简化为 `user.ts`/`favorite.ts`，个人中心页从 `ProfileView.vue` 改为 `UserCenterView.vue`，路由从 `/lostfound`/`/groupbuy`/`/profile` 修正为 `/lost-found`/`/group-buy`/`/user`。
+
+4. **布局组件抽取**：将 `App.vue` 中的头部和导航栏分别抽取为 `AppHeader.vue` 和 `AppNav.vue` 独立组件，并创建 `AppLayout.vue` 作为页面布局容器。这使得 `App.vue` 从 225 行缩减到约 90 行，职责更加清晰。
+
+5. **辅助组件补充**：创建了 `FormField.vue`（表单项封装，统一 label + 必填标识 + 错误提示）、`LoadingState.vue`（加载动画）、`ErrorState.vue`（失败提示 + 重试按钮）、`SearchBar.vue`（关键词搜索 + 清空功能），这些组件后续被 PublishForm 和各列表页面复用。
+
+这些收敛工作的核心思路是：项目结构应该简单、一致、可预测。少一套数据模型就少一份同步成本，少一个 API 文件就少一个需要维护的模块。Day3 的初期探索是必要的——通过实际使用才能判断哪种方案更合适——但最终必须做出选择并执行到位。

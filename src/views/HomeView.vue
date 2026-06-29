@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/user'
 import { useItemStore } from '@/stores/itemStore'
-import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useFavoriteStore } from '@/stores/favorite'
 import { useMessageStore } from '@/stores/messageStore'
 import { TYPE_LABELS, type ItemType } from '@/data/listings'
 import SafetyNotice from '@/components/SafetyNotice.vue'
@@ -15,8 +15,8 @@ const msgStore = useMessageStore()
 
 const typeEntries: { key: ItemType; label: string; desc: string; gradient: string; route: string }[] = [
   { key: 'secondhand', label: '二手交易', desc: '闲置好物，物美价廉', gradient: 'linear-gradient(135deg, #e8f5e9, #c8e6c9)', route: '/trade' },
-  { key: 'lostfound', label: '失物招领', desc: '丢失拾获，互助找回', gradient: 'linear-gradient(135deg, #e3f2fd, #bbdefb)', route: '/lostfound' },
-  { key: 'group', label: '拼单搭子', desc: '一起拼，更划算', gradient: 'linear-gradient(135deg, #f3e5f5, #e1bee7)', route: '/groupbuy' },
+  { key: 'lostfound', label: '失物招领', desc: '丢失拾获，互助找回', gradient: 'linear-gradient(135deg, #e3f2fd, #bbdefb)', route: '/lost-found' },
+  { key: 'group', label: '拼单搭子', desc: '一起拼，更划算', gradient: 'linear-gradient(135deg, #f3e5f5, #e1bee7)', route: '/group-buy' },
   { key: 'errand', label: '跑腿委托', desc: '代取代送，随叫随到', gradient: 'linear-gradient(135deg, #fbe9e7, #ffccbc)', route: '/errand' },
 ]
 
@@ -37,7 +37,7 @@ onMounted(async () => {
 
 <template>
   <section class="home">
-    <router-link to="/profile" class="banner">
+    <router-link to="/user" class="banner">
       <div class="banner-bg"></div>
       <div class="banner-content">
         <div class="banner-avatar">{{ userStore.nickname ? userStore.nickname[0] : '?' }}</div>
@@ -92,7 +92,7 @@ onMounted(async () => {
     <div class="quick-links">
       <router-link to="/publish" class="ql-btn ql-publish">发布信息</router-link>
       <router-link to="/message" class="ql-btn ql-msg">消息<span v-if="msgStore.totalUnread" class="ql-badge">{{ msgStore.totalUnread }}</span></router-link>
-      <router-link to="/profile" class="ql-btn ql-profile">收藏 {{ favStore.count }}</router-link>
+      <router-link to="/user" class="ql-btn ql-profile">收藏 {{ favStore.count }}</router-link>
       <router-link to="/dashboard" class="ql-btn ql-dash">看板</router-link>
     </div>
   </section>

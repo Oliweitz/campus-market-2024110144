@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useMessageStore } from '@/stores/messageStore'
 import { useItemStore } from '@/stores/itemStore'
 import { useCartStore } from '@/stores/cart'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/user'
+import AppHeader from '@/components/AppHeader.vue'
+import AppNav from '@/components/AppNav.vue'
 
-const router = useRouter()
-const msgStore = useMessageStore()
 const itemStore = useItemStore()
 const cartStore = useCartStore()
 const userStore = useUserStore()
@@ -17,11 +15,6 @@ const activeCount = computed(() => itemStore.items.filter((i) => i.status === '�
 const completedCount = computed(() => itemStore.items.filter((i) => i.status === '已完成').length)
 const campusCount = computed(() => new Set(itemStore.items.map((i) => i.campus)).size)
 
-function handleLogout() {
-  userStore.logout()
-  router.push('/')
-}
-
 onMounted(async () => {
   await userStore.init()
   await itemStore.fetchItems()
@@ -30,28 +23,8 @@ onMounted(async () => {
 
 <template>
   <main class="app">
-    <header class="header">
-      <h1><router-link to="/" class="title-link">校园轻集市</router-link></h1>
-      <div class="header-user">
-        <template v-if="userStore.isLoggedIn">
-          <span class="hu-avatar">{{ userStore.nickname[0] }}</span>
-          <span class="hu-name">{{ userStore.nickname }}</span>
-          <button class="hu-logout" @click="handleLogout">退出</button>
-        </template>
-        <router-link v-else to="/login" class="hu-login">登录</router-link>
-      </div>
-    </header>
-
-    <nav class="nav">
-      <router-link to="/">首页</router-link>
-      <router-link to="/list">列表</router-link>
-      <router-link to="/publish">发布</router-link>
-      <router-link to="/message">
-        消息
-        <span v-if="msgStore.totalUnread > 0" class="nav-badge">{{ msgStore.totalUnread }}</span>
-      </router-link>
-      <router-link to="/profile">我的</router-link>
-    </nav>
+    <AppHeader />
+    <AppNav />
 
     <router-link to="/dashboard" class="stats-bar">
       <div class="sb-item">
@@ -81,7 +54,7 @@ onMounted(async () => {
       </Transition>
     </RouterView>
 
-    <router-link v-if="cartStore.totalCount > 0" to="/profile" class="cart-float">
+    <router-link v-if="cartStore.totalCount > 0" to="/user" class="cart-float">
       <span class="cart-float-icon">🛒</span>
       <span class="cart-float-badge">{{ cartStore.totalCount }}</span>
     </router-link>
@@ -139,19 +112,6 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 <style scoped>
 .app { max-width: var(--page-width); margin: 0 auto; padding: 28px 32px 60px; }
 
-.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.header h1 { font-size: 20px; font-weight: 600; color: var(--text); margin: 0; }
-.title-link { text-decoration: none; color: inherit; }
-
-.header-user { display: flex; align-items: center; gap: 8px; }
-.hu-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--primary-grad); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
-.hu-name { font-size: 13px; font-weight: 500; color: var(--text); }
-.hu-logout { background: none; border: 1px solid #e0e0e0; border-radius: var(--radius-full); padding: 4px 12px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all var(--transition); }
-.hu-logout:hover { border-color: var(--danger); color: var(--danger); }
-.hu-login { text-decoration: none; font-size: 13px; font-weight: 500; color: var(--primary); padding: 6px 16px; border: 1px solid var(--primary); border-radius: var(--radius-full); transition: all var(--transition); }
-.hu-login:hover { background: var(--primary); color: #fff; }
-
-/* ---- 数据信息栏（全宽，仿 banner 风格） ---- */
 .stats-bar {
   display: flex; align-items: center; gap: 0;
   background: linear-gradient(135deg, #e3f2fd, #f0f7ff);
@@ -164,26 +124,6 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .sb-num { display: block; font-size: 24px; font-weight: 800; color: var(--primary); }
 .sb-label { font-size: 12px; color: var(--text-light); }
 .sb-divider { width: 1px; height: 36px; background: rgba(91,155,213,0.2); }
-
-/* ---- 导航栏（紧凑） ---- */
-.nav {
-  display: flex; gap: 2px; margin-bottom: 20px; padding: 3px;
-  background: var(--card-bg); border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm); overflow-x: auto;
-  -webkit-overflow-scrolling: touch; width: fit-content;
-}
-.nav a {
-  position: relative; text-decoration: none; color: var(--text-light);
-  padding: 6px 14px; border-radius: var(--radius-full);
-  font-size: 13px; font-weight: 500; white-space: nowrap;
-  transition: all var(--transition);
-}
-.nav a:hover { color: var(--text); background: var(--bg); }
-.nav a.router-link-active {
-  color: #fff; background: var(--primary);
-  box-shadow: 0 2px 6px rgba(91,155,213,0.35);
-}
-.nav-badge { position: absolute; top: 0; right: 2px; background: var(--danger); color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 8px; min-width: 14px; text-align: center; line-height: 14px; }
 
 .cart-float {
   position: fixed; right: 24px; bottom: 24px; z-index: 50;
@@ -211,15 +151,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   .app { padding: 20px 16px 48px; }
   .sb-num { font-size: 20px; }
   .stats-bar { padding: 16px 10px; }
-  .nav a { padding: 5px 10px; font-size: 12px; }
 }
 @media (max-width: 480px) {
   .app { padding: 14px 10px 40px; }
-  .header h1 { font-size: 18px; }
   .sb-num { font-size: 16px; }
   .sb-label { font-size: 10px; }
   .stats-bar { padding: 12px 6px; }
-  .nav { margin-bottom: 16px; }
-  .nav a { padding: 5px 8px; font-size: 12px; }
 }
 </style>
