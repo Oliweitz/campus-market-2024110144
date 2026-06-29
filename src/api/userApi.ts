@@ -16,6 +16,26 @@ export const userApi = {
     return request.get<User>(`/users/${id}`)
   },
 
+  /** 登录：根据用户名查找用户 */
+  async login(username: string, password: string): Promise<User | null> {
+    const res = await request.get<User[]>('/users', {
+      params: { username },
+    })
+    const user = res.data[0]
+    if (user && user.password === password) {
+      return user
+    }
+    return null
+  },
+
+  /** 注册 */
+  register(data: Omit<User, 'id' | 'createdAt'>) {
+    return request.post<User>('/users', {
+      ...data,
+      createdAt: new Date().toISOString(),
+    })
+  },
+
   /** 创建用户 */
   createUser(data: Omit<User, 'id'>) {
     return request.post<User>('/users', data)

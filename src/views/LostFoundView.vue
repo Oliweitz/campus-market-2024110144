@@ -1,0 +1,92 @@
+<template>
+  <section class="page">
+    <div class="page-header">
+      <button class="back-btn" @click="$router.back()">&larr; 返回</button>
+      <h1>失物招领</h1>
+      <p>寻找遗失物品，帮助同学找回失物，共建互助校园。</p>
+    </div>
+
+    <div v-if="itemStore.loading" class="loading-state">
+      <p>加载中...</p>
+    </div>
+
+    <template v-else-if="itemStore.error">
+      <EmptyState :text="itemStore.error" hint="请检查 Mock 服务是否已启动" />
+    </template>
+
+    <template v-else-if="items.length > 0">
+      <div class="list">
+        <router-link
+          v-for="item in items"
+          :key="item.id"
+          :to="'/detail/' + item.id"
+          class="card-link"
+        >
+          <ItemCard
+            :title="item.title"
+            :description="item.description"
+            :tag="item.lostOrFound === 'lost' ? '丢失' : '拾获'"
+            :location="item.location"
+            :time="item.eventTime"
+          >
+            <template #footer>
+              <div class="card-footer">
+                <span v-if="item.itemFeature" class="item-name">{{ item.itemFeature }}</span>
+                <span class="contact">站内消息联系</span>
+                <span class="status" :class="statusClass(item.status)">{{ item.status }}</span>
+              </div>
+            </template>
+          </ItemCard>
+        </router-link>
+      </div>
+    </template>
+
+    <EmptyState
+      v-else
+      text="暂无失物招领信息"
+      hint="如果有遗失或拾获物品，快来发布吧"
+    />
+  </section>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { useItemStore } from '@/stores/itemStore'
+import ItemCard from '@/components/ItemCard.vue'
+import EmptyState from '@/components/EmptyState.vue'
+
+const itemStore = useItemStore()
+
+const items = computed(() => itemStore.getByType('lostfound'))
+
+function statusClass(status: string) {
+  if (status === '进行中') return 's-open'
+  if (status === '已关闭') return 's-closed'
+  if (status === '已完成') return 's-done'
+  return ''
+}
+
+onMounted(async () => {
+  await itemStore.fetchItems()
+})
+</script>
+
+<style scoped>
+.page { display: flex; flex-direction: column; gap: 20px; }
+.page-header { padding: 24px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+.page-header h1 { margin: 0 0 8px; font-size: 20px; font-weight: 600; }
+.page-header p { margin: 0; color: var(--text-light); font-size: 14px; }
+.back-btn { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-full); font-size: 13px; color: var(--text-light); cursor: pointer; padding: 6px 16px; margin-bottom: 12px; transition: all var(--transition); }
+.back-btn:hover { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
+.loading-state { text-align: center; padding: 60px 0; color: var(--text-lighter); }
+.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card-link { text-decoration: none; color: inherit; display: block; }
+.card-footer { display: flex; align-items: center; gap: 10px; }
+.item-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.contact { font-size: 13px; color: var(--text-light); }
+.status { margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 999px; }
+.s-open { background: var(--success-light); color: var(--success); }
+.s-closed { background: #f0f0f0; color: #999; }
+.s-done { background: var(--primary-light); color: var(--primary); }
+@media (max-width: 600px) { .list { grid-template-columns: 1fr; } }
+</style>

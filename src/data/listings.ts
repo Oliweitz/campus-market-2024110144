@@ -22,6 +22,8 @@ export type NoticeType = 'safety' | 'rule' | 'notice'
 /** 用户 */
 export interface User {
   id: number
+  username: string
+  password: string
   nickname: string
   college: string
   campus: string

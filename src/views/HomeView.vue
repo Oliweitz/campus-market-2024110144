@@ -13,11 +13,11 @@ const itemStore = useItemStore()
 const favStore = useFavoriteStore()
 const msgStore = useMessageStore()
 
-const typeEntries: { key: ItemType; label: string; desc: string; gradient: string }[] = [
-  { key: 'secondhand', label: '二手交易', desc: '闲置好物，物美价廉', gradient: 'linear-gradient(135deg, #e8f5e9, #c8e6c9)' },
-  { key: 'lostfound', label: '失物招领', desc: '丢失拾获，互助找回', gradient: 'linear-gradient(135deg, #e3f2fd, #bbdefb)' },
-  { key: 'group', label: '拼单搭子', desc: '一起拼，更划算', gradient: 'linear-gradient(135deg, #f3e5f5, #e1bee7)' },
-  { key: 'errand', label: '跑腿委托', desc: '代取代送，随叫随到', gradient: 'linear-gradient(135deg, #fbe9e7, #ffccbc)' },
+const typeEntries: { key: ItemType; label: string; desc: string; gradient: string; route: string }[] = [
+  { key: 'secondhand', label: '二手交易', desc: '闲置好物，物美价廉', gradient: 'linear-gradient(135deg, #e8f5e9, #c8e6c9)', route: '/trade' },
+  { key: 'lostfound', label: '失物招领', desc: '丢失拾获，互助找回', gradient: 'linear-gradient(135deg, #e3f2fd, #bbdefb)', route: '/lostfound' },
+  { key: 'group', label: '拼单搭子', desc: '一起拼，更划算', gradient: 'linear-gradient(135deg, #f3e5f5, #e1bee7)', route: '/groupbuy' },
+  { key: 'errand', label: '跑腿委托', desc: '代取代送，随叫随到', gradient: 'linear-gradient(135deg, #fbe9e7, #ffccbc)', route: '/errand' },
 ]
 
 const recentListings = computed(() =>
@@ -52,7 +52,7 @@ onMounted(async () => {
     <SafetyNotice />
 
     <div class="type-grid">
-      <router-link v-for="t in typeEntries" :key="t.key" :to="'/list?type=' + t.key" class="type-card" :style="{ background: t.gradient }">
+      <router-link v-for="t in typeEntries" :key="t.key" :to="t.route" class="type-card" :style="{ background: t.gradient }">
         <span class="tc-icon" v-html="['&#8635;','&#9744;','&#9878;','&#9971;'][typeEntries.indexOf(t)]"></span>
         <div class="tc-text"><strong>{{ t.label }}</strong><small>{{ t.desc }}</small></div>
         <span class="tc-arrow">&rarr;</span>

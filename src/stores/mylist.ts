@@ -1,10 +1,12 @@
 // ============================================================
-// 校园轻集市 — 我的参与记录（拼单/跑腿）
+// 校园轻集市 — 我的参与记录（拼单/跑腿）localStorage 持久化
 // ============================================================
 
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useItemStore } from '@/stores/itemStore'
+
+const STORAGE_KEY = 'campus_market_mylist'
 
 export interface MyRecord {
   id: number
@@ -14,8 +16,20 @@ export interface MyRecord {
   publisherId: number
 }
 
+function loadMyList(): MyRecord[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch { return [] }
+}
+
 export const useMyListStore = defineStore('mylist', () => {
-  const items = ref<MyRecord[]>([])
+  const items = ref<MyRecord[]>(loadMyList())
+
+  // 自动持久化
+  watch(items, (val) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
+  }, { deep: true })
 
   async function joinGroup(listing: { id: number; title: string; publisherId: number }) {
     if (items.value.find((i) => i.listingId === listing.id && i.type === 'group')) return

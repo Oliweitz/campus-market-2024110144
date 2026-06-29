@@ -1,6 +1,7 @@
 // ============================================================
 // 校园轻集市 — 用户状态管理
-// 职责: 当前登录用户信息、localStorage 持久化当前用户 id
+// 职责: 登录 / 注册 / 登出 / 当前用户信息
+// 持久化策略: userId + 关键信息存入 localStorage，刷新不丢
 // ============================================================
 
 import { ref, computed } from 'vue'
@@ -9,14 +10,59 @@ import { userApi } from '@/api/userApi'
 import { LS_KEYS } from '@/utils/constants'
 import type { User } from '@/data/listings'
 
+const AUTH_KEY = 'campus_market_auth'
+
+interface StoredAuth {
+  userId: string | number
+  nickname: string
+  campus: string
+  college: string
+}
+
+function loadAuth(): StoredAuth | null {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function saveAuth(user: User) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify({
+    userId: user.id,
+    nickname: user.nickname,
+    campus: user.campus,
+    college: user.college,
+  }))
+}
+
+function clearAuth() {
+  localStorage.removeItem(AUTH_KEY)
+  localStorage.removeItem(LS_KEYS.CURRENT_USER_ID)
+}
+
 export const useUserStore = defineStore('user', () => {
-  // ---- state ----
-  const currentUserId = ref<number | null>(
-    Number(localStorage.getItem(LS_KEYS.CURRENT_USER_ID)) || null,
-  )
+  // ---- 从 localStorage 恢复 ----
+  const stored = loadAuth()
+
+  const currentUserId = ref<string | number | null>(stored?.userId ?? null)
   const profile = ref<User | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  // 如果有本地缓存，先用缓存数据撑起 UI
+  if (stored) {
+    profile.value = {
+      id: stored.userId as number,
+      username: '',
+      password: '',
+      nickname: stored.nickname,
+      college: stored.college,
+      campus: stored.campus,
+      role: '',
+      creditScore: 0,
+      createdAt: '',
+    }
+  }
 
   // ---- getters ----
   const isLoggedIn = computed(() => currentUserId.value !== null && profile.value !== null)
@@ -24,45 +70,88 @@ export const useUserStore = defineStore('user', () => {
   const campus = computed(() => profile.value?.campus ?? '')
 
   // ---- actions ----
-  /** 初始化：根据 localStorage 中的 userId 加载用户，无则自动登录为张三（id=1） */
+  /** 初始化：后台静默刷新用户完整信息，失败不影响登录态 */
   async function init() {
-    // 首次访问自动以张三身份登录
-    if (!currentUserId.value) {
-      currentUserId.value = 1
-      localStorage.setItem(LS_KEYS.CURRENT_USER_ID, '1')
-    }
+    if (!currentUserId.value) return
     loading.value = true
     error.value = null
     try {
       const res = await userApi.getUserById(currentUserId.value)
       profile.value = res.data
-    } catch (e) {
-      error.value = '加载用户信息失败'
-      console.error('[userStore] init failed:', e)
+      saveAuth(res.data)
+    } catch {
+      // API 暂时不可用，保留本地缓存，不清除登录态
+      error.value = null
     } finally {
       loading.value = false
     }
   }
 
-  /** 创建本地身份 */
-  async function createProfile(data: Omit<User, 'id' | 'createdAt'>) {
+  /** 登录 */
+  async function login(username: string, password: string): Promise<boolean> {
     loading.value = true
     error.value = null
     try {
-      const res = await userApi.createUser({
-        ...data,
-        createdAt: new Date().toISOString(),
-      } as Omit<User, 'id'>)
-      profile.value = res.data
-      currentUserId.value = res.data.id
-      localStorage.setItem(LS_KEYS.CURRENT_USER_ID, String(res.data.id))
-      return res.data
+      const user = await userApi.login(username, password)
+      if (user) {
+        profile.value = user
+        currentUserId.value = user.id
+        saveAuth(user)
+        localStorage.setItem(LS_KEYS.CURRENT_USER_ID, String(user.id))
+        return true
+      }
+      error.value = '用户名或密码错误'
+      return false
     } catch (e) {
-      error.value = '创建用户失败'
-      throw e
+      error.value = '登录失败，请检查网络'
+      return false
     } finally {
       loading.value = false
     }
+  }
+
+  /** 注册 */
+  async function register(data: {
+    username: string
+    password: string
+    nickname: string
+    college: string
+    campus: string
+    role: string
+  }): Promise<boolean> {
+    loading.value = true
+    error.value = null
+    try {
+      const check = await request.get<User[]>('/users', {
+        params: { username: data.username },
+      })
+      if (check.data.length > 0) {
+        error.value = '用户名已被注册'
+        return false
+      }
+      const res = await userApi.register({
+        ...data,
+        creditScore: 80,
+      })
+      profile.value = res.data
+      currentUserId.value = res.data.id
+      saveAuth(res.data)
+      localStorage.setItem(LS_KEYS.CURRENT_USER_ID, String(res.data.id))
+      return true
+    } catch (e) {
+      error.value = '注册失败，请重试'
+      return false
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /** 登出 */
+  function logout() {
+    profile.value = null
+    currentUserId.value = null
+    clearAuth()
+    error.value = null
   }
 
   /** 更新用户信息 */
@@ -72,6 +161,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const res = await userApi.updateUser(currentUserId.value, data)
       profile.value = res.data
+      saveAuth(res.data)
     } catch (e) {
       error.value = '更新用户信息失败'
     } finally {
@@ -87,6 +177,7 @@ export const useUserStore = defineStore('user', () => {
       const res = await userApi.getUserById(id)
       profile.value = res.data
       currentUserId.value = id
+      saveAuth(res.data)
       localStorage.setItem(LS_KEYS.CURRENT_USER_ID, String(id))
     } catch (e) {
       error.value = '切换用户失败'
@@ -104,8 +195,13 @@ export const useUserStore = defineStore('user', () => {
     nickname,
     campus,
     init,
-    createProfile,
+    login,
+    register,
+    logout,
     updateProfile,
     switchUser,
   }
 })
+
+// 顶层 import 供 userStore 内部使用
+import request from '@/api/request'

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useItemStore } from '@/stores/itemStore'
 import { useFavoriteStore } from '@/stores/favoriteStore'
@@ -8,6 +9,7 @@ import { useCartStore } from '@/stores/cart'
 import { TYPE_LABELS, STATUS_LABELS, CAMPUS_LIST, type ItemType, type User } from '@/data/listings'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 
+const router = useRouter()
 const userStore = useUserStore()
 const itemStore = useItemStore()
 const favStore = useFavoriteStore()
@@ -43,6 +45,11 @@ function toggle(key: string) { openSections.value[key] = !openSections.value[key
 
 async function handleWithdraw(id: number) { await mylist.withdraw(id) }
 
+function handleLogout() {
+  userStore.logout()
+  router.push('/')
+}
+
 async function handleDelete(id: string | number, title: string) {
   if (!window.confirm(`确定要删除「${title}」吗？此操作不可撤销。`)) return
   await itemStore.deleteItem(id)
@@ -66,6 +73,8 @@ onMounted(async () => {
         </div>
         <div class="pc-credit"><span>{{ userStore.profile?.creditScore ?? 0 }}</span><small>信用分</small></div>
         <button class="edit-btn" @click="openEdit">编辑</button>
+        <button v-if="userStore.isLoggedIn" class="logout-btn" @click="handleLogout">退出登录</button>
+        <router-link v-else to="/login" class="login-btn">登录</router-link>
       </div>
     </div>
 
@@ -161,6 +170,10 @@ onMounted(async () => {
 .pc-credit { margin-left: auto; text-align: center; } .pc-credit span { display: block; font-size: 22px; font-weight: 700; color: var(--primary); } .pc-credit small { font-size: 11px; color: var(--text-lighter); }
 .edit-btn { padding: 6px 14px; border: 1px solid #ddd; border-radius: var(--radius-sm); background: #fff; font-size: 12px; cursor: pointer; color: var(--text-light); transition: all var(--transition); }
 .edit-btn:hover { border-color: var(--primary); color: var(--primary); }
+.logout-btn { padding: 6px 14px; border: 1px solid #f5c6cb; border-radius: var(--radius-sm); background: #fff; font-size: 12px; cursor: pointer; color: var(--danger); transition: all var(--transition); }
+.logout-btn:hover { background: var(--danger-light); }
+.login-btn { padding: 6px 14px; border: 1px solid var(--primary); border-radius: var(--radius-sm); background: #fff; font-size: 12px; cursor: pointer; color: var(--primary); text-decoration: none; transition: all var(--transition); display: inline-block; }
+.login-btn:hover { background: var(--primary-light); }
 
 /* modal */
 .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 100; }

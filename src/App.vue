@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMessageStore } from '@/stores/messageStore'
 import { useItemStore } from '@/stores/itemStore'
 import { useCartStore } from '@/stores/cart'
+import { useUserStore } from '@/stores/userStore'
 
+const router = useRouter()
 const msgStore = useMessageStore()
 const itemStore = useItemStore()
 const cartStore = useCartStore()
+const userStore = useUserStore()
 
 const totalCount = computed(() => itemStore.items.length)
 const activeCount = computed(() => itemStore.items.filter((i) => i.status === '进行中').length)
 const completedCount = computed(() => itemStore.items.filter((i) => i.status === '已完成').length)
 const campusCount = computed(() => new Set(itemStore.items.map((i) => i.campus)).size)
 
+function handleLogout() {
+  userStore.logout()
+  router.push('/')
+}
+
 onMounted(async () => {
+  await userStore.init()
   await itemStore.fetchItems()
 })
 </script>
@@ -22,6 +32,14 @@ onMounted(async () => {
   <main class="app">
     <header class="header">
       <h1><router-link to="/" class="title-link">校园轻集市</router-link></h1>
+      <div class="header-user">
+        <template v-if="userStore.isLoggedIn">
+          <span class="hu-avatar">{{ userStore.nickname[0] }}</span>
+          <span class="hu-name">{{ userStore.nickname }}</span>
+          <button class="hu-logout" @click="handleLogout">退出</button>
+        </template>
+        <router-link v-else to="/login" class="hu-login">登录</router-link>
+      </div>
     </header>
 
     <nav class="nav">
@@ -121,9 +139,17 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 <style scoped>
 .app { max-width: var(--page-width); margin: 0 auto; padding: 28px 32px 60px; }
 
-.header { margin-bottom: 14px; }
-.header h1 { font-size: 20px; font-weight: 600; color: var(--text); }
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.header h1 { font-size: 20px; font-weight: 600; color: var(--text); margin: 0; }
 .title-link { text-decoration: none; color: inherit; }
+
+.header-user { display: flex; align-items: center; gap: 8px; }
+.hu-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--primary-grad); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+.hu-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.hu-logout { background: none; border: 1px solid #e0e0e0; border-radius: var(--radius-full); padding: 4px 12px; font-size: 12px; color: var(--text-light); cursor: pointer; transition: all var(--transition); }
+.hu-logout:hover { border-color: var(--danger); color: var(--danger); }
+.hu-login { text-decoration: none; font-size: 13px; font-weight: 500; color: var(--primary); padding: 6px 16px; border: 1px solid var(--primary); border-radius: var(--radius-full); transition: all var(--transition); }
+.hu-login:hover { background: var(--primary); color: #fff; }
 
 /* ---- 数据信息栏（全宽，仿 banner 风格） ---- */
 .stats-bar {
