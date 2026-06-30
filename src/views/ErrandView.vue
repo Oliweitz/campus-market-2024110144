@@ -6,6 +6,8 @@
       <p>代取快递、代买物品、代交材料，同学之间互相帮忙。</p>
     </div>
 
+    <SearchBar v-model="keyword" placeholder="搜索任务类型、标题、取送地点或描述" />
+
     <LoadingState v-if="itemStore.loading" text="正在加载跑腿委托信息..." />
 
     <ErrorState
@@ -15,10 +17,10 @@
       @retry="itemStore.fetchItems"
     />
 
-    <template v-else-if="items.length > 0">
+    <template v-else-if="filteredItems.length > 0">
       <div class="list">
         <router-link
-          v-for="item in items"
+          v-for="item in filteredItems"
           :key="item.id"
           :to="'/detail/' + item.id"
           class="card-link"
@@ -45,23 +47,39 @@
 
     <EmptyState
       v-else
-      text="暂无跑腿委托"
-      hint="需要帮忙？快来发布跑腿任务吧"
+      :text="keyword ? '没有找到匹配的跑腿委托' : '暂无跑腿委托'"
+      :hint="keyword ? '试试其他关键词' : '需要帮忙？快来发布跑腿任务吧'"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useItemStore } from '@/stores/itemStore'
 import ItemCard from '@/components/ItemCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import ErrorState from '@/components/ErrorState.vue'
+import SearchBar from '@/components/SearchBar.vue'
 
 const itemStore = useItemStore()
+const keyword = ref('')
 
-const items = computed(() => itemStore.getByType('errand'))
+const filteredItems = computed(() => {
+  const list = itemStore.getByType('errand')
+  if (!keyword.value.trim()) return list
+  const kw = keyword.value.trim().toLowerCase()
+  return list.filter((item) =>
+    item.title.toLowerCase().includes(kw) ||
+    item.description.toLowerCase().includes(kw) ||
+    item.location.toLowerCase().includes(kw) ||
+    (item.taskType && item.taskType.toLowerCase().includes(kw)) ||
+    (item.from && item.from.toLowerCase().includes(kw)) ||
+    (item.to && item.to.toLowerCase().includes(kw)) ||
+    (item.taskPlace && item.taskPlace.toLowerCase().includes(kw)) ||
+    item.tags?.some((t) => t.toLowerCase().includes(kw)),
+  )
+})
 
 function statusClass(status: string) {
   if (status === '进行中') return 's-open'

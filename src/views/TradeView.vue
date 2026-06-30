@@ -6,6 +6,8 @@
       <p>浏览同学发布的闲置物品，发现校园内的实用好物。</p>
     </div>
 
+    <SearchBar v-model="keyword" placeholder="搜索商品标题、分类、地点或描述" />
+
     <LoadingState v-if="itemStore.loading" text="正在加载二手交易信息..." />
 
     <ErrorState
@@ -15,10 +17,10 @@
       @retry="itemStore.fetchItems"
     />
 
-    <template v-else-if="items.length > 0">
+    <template v-else-if="filteredItems.length > 0">
       <div class="list">
         <router-link
-          v-for="item in items"
+          v-for="item in filteredItems"
           :key="item.id"
           :to="'/detail/' + item.id"
           class="card-link"
@@ -46,24 +48,37 @@
 
     <EmptyState
       v-else
-      text="暂无二手交易信息"
-      hint="快去发布第一件闲置物品吧"
+      :text="keyword ? '没有找到匹配的二手交易信息' : '暂无二手交易信息'"
+      :hint="keyword ? '试试其他关键词' : '快去发布第一件闲置物品吧'"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useItemStore } from '@/stores/itemStore'
 import ItemCard from '@/components/ItemCard.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import ErrorState from '@/components/ErrorState.vue'
+import SearchBar from '@/components/SearchBar.vue'
 
 const itemStore = useItemStore()
+const keyword = ref('')
 
-const items = computed(() => itemStore.getByType('secondhand'))
+const filteredItems = computed(() => {
+  const list = itemStore.getByType('secondhand')
+  if (!keyword.value.trim()) return list
+  const kw = keyword.value.trim().toLowerCase()
+  return list.filter((item) =>
+    item.title.toLowerCase().includes(kw) ||
+    item.description.toLowerCase().includes(kw) ||
+    item.location.toLowerCase().includes(kw) ||
+    (item.category && item.category.toLowerCase().includes(kw)) ||
+    item.tags?.some((t) => t.toLowerCase().includes(kw)),
+  )
+})
 
 function statusClass(status: string) {
   if (status === '进行中') return 's-open'

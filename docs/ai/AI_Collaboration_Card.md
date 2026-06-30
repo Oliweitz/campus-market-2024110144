@@ -195,3 +195,69 @@ Day3 实训手册要求对「我的设计」和「AI 设计」做明确比较。
 - **AI 输出**：两条路线的差异分析——独立模型让四类业务 API 边界清晰，统一模型让跨类型列表和数据看板天然支持
 - **修改**：最终选择统一模型。依据有三：1) Day3 实际开发中已验证独立模型导致列表页与专属页数据不一致；2) Git 提交 `e206cfb` 记录了向 Level 2 架构的迁移；3) `src/data/listings.ts` 注释明确写「与架构文档对齐」
 - **结论**：文档冲突时，以有实际开发验证证据支撑的方案为准。架构文档是设计意图，Day3 证据是实践结果——后者更具有说服力
+
+---
+
+### 25. 列表卡片高度统一
+
+- **Prompt**：四个分类列表页（二手/失物/拼单/跑腿）的卡片高度不一致，同一行卡片参差不齐，需要统一高度
+- **AI 输出**：`ItemCard.vue` 重构为 flexbox 列布局（`display: flex; flex-direction: column; height: 100%`），描述区 `flex: 1` 自动撑满剩余空间，meta 区和 footer 区设置 `flex-shrink: 0` 始终底部对齐。四个分类视图（TradeView/LostFoundView/GroupBuyView/ErrandView）的 `.card-link` 设为 `display: flex; height: 100%`
+- **修改**：初次方案只改了 ItemCard 内部，同行卡片仍不等高——原因是外层 `<router-link>` 未设置高度。追加 card-link 的 flex+height:100% 后解决
+- **结论**：CSS 等高卡片需要整条链路（外层容器→链接包裹→卡片本体）都参与 flex 布局，只改最内层无效
+
+### 26. 收藏按钮对齐
+
+- **Prompt**：首页热门推荐卡片中，收藏按钮（心形图标）与标题区垂直方向未对齐，视觉上不协调
+- **AI 输出**：HomeView 和 MarketItemCard 的标题行容器添加 `align-items: center`，收藏按钮垂直居中
+- **结论**：flexbox 默认 `align-items: stretch` 可能导致图标与文字基线不一致，显式设 center 是低成本高收益的微调
+
+### 27. 详情页格式统一
+
+- **Prompt**：跑腿委托详情页的取送路线使用了异形的虚线框样式（route-box），与详情页其他字段的 `.aux` 辅助信息格式不一致
+- **AI 输出**：删除了 `.route-box` 及其子元素（`.route-node`/`.route-label`/`.route-arrow`）共 9 行 CSS 和 5 行模板代码，改为两条统一的 `.aux` 格式：`取件: {{ product.from }}` 和 `送达: {{ product.to }}`
+- **修改**：去掉了彩色圆点标记（黄/绿）和虚线边框，风格与页面其他辅助信息行保持一致
+- **结论**：特殊样式是技术债务——当页面只有一处异形组件时，视觉跳脱大于信息突出。统一优于特殊
+
+### 28. 旧数据字段补齐
+
+- **Prompt**：db.json 中有 22 条旧数据缺少 `category`/`itemName`/`contact`/`groupType`/`taskType`/`from`/`to`/`deadline` 等字段，导致详情页渲染空白
+- **AI 输出**：逐条分析每条旧数据的 type 类型，按需补齐对应字段——二手交易补 `category`+`itemName`+`contact`，拼单补 `groupType`，跑腿补 `taskType`+`from`+`to`+`deadline`。同时新增了一条跑腿示例数据（帮忙买洗衣粉）作为数据完整性验证
+- **修改**：补齐过程中发现部分旧数据的 `from`/`to` 语义与新的 `取件/送达` 格式对齐，人工确认每条路线描述合理性
+- **结论**：数据迁移是重构的最后一公里——代码改了字段名但旧数据不补齐，视图层就会静默渲染空白，用户看不到但数据完整性已受损
+
+---
+
+### 29. Day6 搜索筛选集成
+
+- **Prompt**：四个分类列表视图（TradeView/LostFoundView/GroupBuyView/ErrandView）缺少搜索功能，需要为每个页面集成关键词搜索
+- **AI 输出**：在每个视图中新增 `keyword` ref + `filteredItems` computed，搜索范围覆盖 title/description/location + 分类专属字段（如 category/itemName/groupType/taskType/from/to），空状态根据有无 keyword 区分"暂无数据"和"无匹配结果"
+- **修改**：SearchBar.vue 原本是孤组件（零引用），接入后 4 个视图全部统一使用同一搜索组件。搜索字段按业务场景定制——跑腿额外搜索 from/to/taskPlace，二手额外搜索 category
+- **结论**：搜索组件应提前设计并贯入所有列表页，事后补会导致每个视图重复写相似的过滤逻辑
+
+### 30. 导航栏下拉菜单改造
+
+- **Prompt**：导航栏需要保留"列表"入口，同时将四个分类页做成悬停下拉子菜单，避免导航栏过长
+- **AI 输出**：使用 `@mouseenter`/`@mouseleave` + `v-show` 实现下拉菜单，带 150ms 延迟收起防止误触，箭头图标旋转动画，分类页激活时父级"列表"同步高亮
+- **修改**：初次实现将 hideTimer 声明为模块级 `let` 变量，审查发现组件卸载时定时器未清理会导致内存泄漏。改为 `ref` + `onUnmounted` 清理
+- **结论**：悬停交互必须考虑延迟收起（防抖）和组件卸载清理，否则长时间使用会积累定时器泄漏
+
+### 31. 冗余依赖清理
+
+- **Prompt**：审查项目构建产物，发现 element-plus CSS 占 362KB 但项目已废弃 Element Plus 分支
+- **AI 输出**：确认 src/ 中零处使用 Element Plus 组件，仅 main.ts 残留 `import 'element-plus/dist/index.css'`
+- **修改**：删除 main.ts 中的 CSS 导入和无用注释，从 package.json 移除 `element-plus` 依赖，运行 pnpm install 更新 lockfile
+- **结论**：实验性分支删除后应同步清理依赖，否则每次构建都在打包 362KB 死代码。`grep -r` 全局搜索确认零引用是安全删除的前提
+
+### 32. 代码审查与缺陷修复
+
+- **Prompt**：对全项目（stores/api/views/components/utils/router/db.json）进行冗余代码和缺陷审查
+- **AI 输出**：三路并行审查发现 5 项高严重度问题——`getRecentItems` 逻辑反了（返回最旧而非最新）、`ChatBox.vue` 模板 ref 未声明导致 Vue 警告、`AppNav.vue` 定时器泄漏、`db.json` deadline 早于 createdAt、senderId 类型不一致
+- **修改**：删除 statistics.ts 多余的 `.reverse()`、移除 ChatBox 无用 `ref="logRef"`、hideTimer 改为响应式 ref + onUnmounted 清理、修正 db.json 数据错误
+- **结论**：多路并行审查比单一视角覆盖率高——三个 agent 分别从 stores/api、views/components、router/utils 三个维度切入，发现了单一路径难以同时发现的跨层问题（如 ID 类型 mismatch、日期格式混用）
+
+### 33. 证据卡编写
+
+- **Prompt**：按 Day6 实训手册要求编写证据卡，需覆盖交互优化、加载状态、错误状态、搜索筛选、代码整理、AI 协作、完整走查
+- **AI 输出**：结构化的 Day6_Evidence.md，覆盖 8 个章节，详述 LoadingState/ErrorState/SearchBar 的创建与集成过程、5 项缺陷修复记录、AI 建议筛选、完整功能走查 12 步
+- **修改**：对照实训手册逐条核对交付物清单，补充人工调整细节和反思内容
+- **结论**：证据卡应在开发过程中同步记录而非事后补写，否则容易遗漏 AI 建议筛选的细节和真实问题的排查过程

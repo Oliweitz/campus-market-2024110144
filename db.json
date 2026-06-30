@@ -62,7 +62,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 136,
+      "viewCount": 137,
       "favoriteCount": 5,
       "createdAt": "2026-06-25 10:00:00",
       "updatedAt": "2026-06-25 10:00:00",
@@ -646,7 +646,7 @@
       "reward": 5,
       "from": "南门",
       "to": "南12",
-      "deadline": "2026-06-26T10:30",
+      "deadline": "2026-07-02 18:00",
       "taskPlace": "校门外任意店铺",
       "expectedTime": "6/26 9：00之前",
       "id": "rW8uxpx"
@@ -764,7 +764,7 @@
     },
     {
       "conversationId": "1",
-      "senderId": 2,
+      "senderId": "2",
       "text": "好的，收到。",
       "createdAt": "2026-06-29T08:42:17.824Z",
       "id": "qzGz3fz"

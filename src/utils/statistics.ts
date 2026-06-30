@@ -66,5 +66,5 @@ export function getHotItems(items: Item[], topN = 5): Item[] {
 
 /** 获取最新信息 (按 createdAt 降序取前 N) */
 export function getRecentItems(items: Item[], topN = 6): Item[] {
-  return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).reverse().slice(0, topN)
+  return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, topN)
 }

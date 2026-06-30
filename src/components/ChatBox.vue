@@ -22,7 +22,7 @@ const quickReplies = ['还在吗？', '好的，谢谢', '什么时候方便？'
 <template>
   <div class="chat-panel">
     <div v-if="contactName" class="chat-header">{{ contactName }}</div>
-    <div class="chat-log" ref="logRef">
+    <div class="chat-log">
       <div v-for="(m, i) in messages" :key="i" :class="['bubble', m.from === '我' ? 'bubble-me' : 'bubble-other']">
         <div class="bubble-text">{{ m.text }}</div>
         <div class="bubble-time">{{ m.time }}</div>
