@@ -66,6 +66,7 @@
       "favoriteCount": 5,
       "createdAt": "2026-06-25 10:00:00",
       "updatedAt": "2026-06-25 10:00:00",
+      "category": "教材",
       "price": 35,
       "condition": "九成新",
       "allowBargain": true,
@@ -90,7 +91,8 @@
       "viewCount": 69,
       "favoriteCount": 2,
       "createdAt": "2026-06-24 14:00:00",
-      "updatedAt": "2026-06-28T07:32:16.728Z",
+      "updatedAt": "2026-06-24 14:00:00",
+      "category": "家具",
       "price": 60,
       "condition": "八成新",
       "allowBargain": true,
@@ -115,7 +117,8 @@
       "viewCount": 213,
       "favoriteCount": 8,
       "createdAt": "2026-06-26 09:00:00",
-      "updatedAt": "2026-06-28T07:23:51.482Z",
+      "updatedAt": "2026-06-26 09:00:00",
+      "category": "数码",
       "price": 120,
       "condition": "八成新",
       "allowBargain": false,
@@ -141,6 +144,7 @@
       "favoriteCount": 1,
       "createdAt": "2026-06-23 16:00:00",
       "updatedAt": "2026-06-23 16:00:00",
+      "category": "生活用品",
       "price": 25,
       "condition": "九成新",
       "allowBargain": false,
@@ -165,10 +169,12 @@
       "viewCount": 91,
       "favoriteCount": 3,
       "createdAt": "2026-06-27 08:00:00",
-      "updatedAt": "2026-06-28T09:05:03.958Z",
+      "updatedAt": "2026-06-27 08:00:00",
       "lostOrFound": "lost",
+      "itemName": "黑色钱包",
       "eventTime": "2026-06-26",
-      "itemFeature": "黑色皮质，右上方有品牌Logo"
+      "itemFeature": "黑色皮质，右上方有品牌Logo",
+      "contact": "站内消息联系"
     },
     {
       "id": "6",
@@ -191,8 +197,10 @@
       "createdAt": "2026-06-27 12:00:00",
       "updatedAt": "2026-06-27 12:00:00",
       "lostOrFound": "found",
+      "itemName": "AirPods 白色耳机盒",
       "eventTime": "2026-06-27",
-      "itemFeature": "白色耳机盒，有轻微划痕"
+      "itemFeature": "白色耳机盒，有轻微划痕",
+      "contact": "站内消息联系"
     },
     {
       "id": "7",
@@ -215,8 +223,10 @@
       "createdAt": "2026-06-26 18:00:00",
       "updatedAt": "2026-06-26 18:00:00",
       "lostOrFound": "lost",
+      "itemName": "校园卡",
       "eventTime": "2026-06-26",
-      "itemFeature": "蓝色卡面，正面贴有卡通贴纸"
+      "itemFeature": "蓝色卡面，正面贴有卡通贴纸",
+      "contact": "站内消息联系"
     },
     {
       "id": "8",
@@ -234,13 +244,14 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 80,
+      "viewCount": 81,
       "favoriteCount": 4,
       "createdAt": "2026-06-27 10:00:00",
       "updatedAt": "2026-06-27 10:00:00",
+      "groupType": "奶茶拼单",
       "targetCount": 4,
       "currentCount": 2,
-      "deadline": "2026-06-29"
+      "deadline": "2026-07-03"
     },
     {
       "id": "9",
@@ -262,6 +273,7 @@
       "favoriteCount": 9,
       "createdAt": "2026-06-26 15:00:00",
       "updatedAt": "2026-06-26 15:00:00",
+      "groupType": "学习搭子",
       "targetCount": 3,
       "currentCount": 1,
       "deadline": "2026-07-05"
@@ -286,6 +298,7 @@
       "favoriteCount": 12,
       "createdAt": "2026-06-25 09:00:00",
       "updatedAt": "2026-06-25 09:00:00",
+      "groupType": "教材团购",
       "targetCount": 10,
       "currentCount": 5,
       "deadline": "2026-07-10"
@@ -306,12 +319,16 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 57,
+      "viewCount": 60,
       "favoriteCount": 2,
       "createdAt": "2026-06-27 14:00:00",
-      "updatedAt": "2026-06-28T06:53:44.860Z",
+      "updatedAt": "2026-06-27 14:00:00",
+      "taskType": "代取快递",
       "reward": 5,
-      "taskPlace": "南区宿舍3号楼",
+      "from": "菜鸟驿站",
+      "to": "南区宿舍3号楼",
+      "taskPlace": "菜鸟驿站",
+      "deadline": "2026-06-27T20:00",
       "expectedTime": "今晚20:00前"
     },
     {
@@ -330,12 +347,16 @@
       ],
       "publisherId": "2",
       "status": "进行中",
-      "viewCount": 24,
+      "viewCount": 28,
       "favoriteCount": 0,
       "createdAt": "2026-06-27 20:00:00",
       "updatedAt": "2026-06-27 20:00:00",
+      "taskType": "代买",
       "reward": 3,
-      "taskPlace": "教学楼B座",
+      "from": "北区食堂",
+      "to": "教学楼B座",
+      "taskPlace": "北区食堂",
+      "deadline": "2026-06-28T07:30",
       "expectedTime": "明早7:30"
     },
     {
@@ -357,9 +378,13 @@
       "viewCount": 98,
       "favoriteCount": 3,
       "createdAt": "2026-06-28 08:00:00",
-      "updatedAt": "2026-06-28T06:36:46.978Z",
+      "updatedAt": "2026-06-28 08:00:00",
+      "taskType": "代打印交作业",
       "reward": 8,
-      "taskPlace": "教务办公室",
+      "from": "打印店",
+      "to": "教务办公室",
+      "taskPlace": "打印店",
+      "deadline": "2026-06-28T16:00",
       "expectedTime": "今天下午16:00前"
     },
     {
@@ -382,6 +407,7 @@
       "favoriteCount": 3,
       "createdAt": "2026-06-24 11:30:00",
       "updatedAt": "2026-06-24 11:30:00",
+      "category": "出行",
       "price": 150,
       "condition": "六成新",
       "allowBargain": true,
@@ -407,6 +433,7 @@
       "favoriteCount": 1,
       "createdAt": "2026-06-25 08:45:00",
       "updatedAt": "2026-06-25 08:45:00",
+      "category": "教材",
       "price": 12,
       "condition": "九成新",
       "allowBargain": false,
@@ -433,8 +460,10 @@
       "createdAt": "2026-06-23 18:40:00",
       "updatedAt": "2026-06-23 18:40:00",
       "lostOrFound": "found",
+      "itemName": "蓝色折叠雨伞",
       "eventTime": "2026-06-23",
-      "itemFeature": "蓝色折叠伞，八成新"
+      "itemFeature": "蓝色折叠伞，八成新",
+      "contact": "站内消息联系"
     },
     {
       "id": "17",
@@ -457,8 +486,10 @@
       "createdAt": "2026-06-26 16:00:00",
       "updatedAt": "2026-06-26 16:00:00",
       "lostOrFound": "lost",
+      "itemName": "银色金士顿U盘",
       "eventTime": "2026-06-26",
-      "itemFeature": "32G银色金士顿，挂有小熊吊坠"
+      "itemFeature": "32G银色金士顿，挂有小熊吊坠",
+      "contact": "站内消息联系"
     },
     {
       "id": "18",
@@ -480,9 +511,10 @@
       "favoriteCount": 4,
       "createdAt": "2026-06-26 20:00:00",
       "updatedAt": "2026-06-26 20:00:00",
+      "groupType": "火锅拼餐",
       "targetCount": 6,
       "currentCount": 3,
-      "deadline": "2026-06-30"
+      "deadline": "2026-07-03"
     },
     {
       "id": "19",
@@ -500,10 +532,11 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 72,
+      "viewCount": 73,
       "favoriteCount": 5,
       "createdAt": "2026-06-25 14:00:00",
       "updatedAt": "2026-06-25 14:00:00",
+      "groupType": "运动搭子",
       "targetCount": 4,
       "currentCount": 2,
       "deadline": "2026-07-01"
@@ -524,12 +557,16 @@
       ],
       "publisherId": "2",
       "status": "进行中",
-      "viewCount": 41,
+      "viewCount": 44,
       "favoriteCount": 1,
       "createdAt": "2026-06-27 09:00:00",
       "updatedAt": "2026-06-27 09:00:00",
+      "taskType": "搬运",
       "reward": 15,
-      "taskPlace": "东区7栋302",
+      "from": "东区2栋501",
+      "to": "东区7栋302",
+      "taskPlace": "东区2栋501",
+      "deadline": "2026-07-02T18:00",
       "expectedTime": "7月2日18:00前"
     },
     {
@@ -548,12 +585,16 @@
       ],
       "publisherId": "3",
       "status": "进行中",
-      "viewCount": 28,
+      "viewCount": 30,
       "favoriteCount": 0,
       "createdAt": "2026-06-28 17:00:00",
       "updatedAt": "2026-06-28 17:00:00",
+      "taskType": "代买晚餐",
       "reward": 5,
-      "taskPlace": "实验楼302",
+      "from": "二食堂",
+      "to": "实验楼302",
+      "taskPlace": "二食堂",
+      "deadline": "2026-06-28T18:30",
       "expectedTime": "今天18:30前"
     },
     {
@@ -563,20 +604,24 @@
       "campus": "南校区",
       "location": "大门",
       "tags": [
-        "旅游，拼单，搭子，川西"
+        "旅游",
+        "拼单",
+        "搭子",
+        "川西"
       ],
       "images": [
         "https://picsum.photos/seed/market1/400/300"
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 14,
+      "viewCount": 15,
       "favoriteCount": 0,
       "createdAt": "2026-06-29 10:30:34",
       "updatedAt": "2026-06-29 10:30:34",
+      "groupType": "旅行搭子",
       "targetCount": 2,
       "currentCount": 1,
-      "deadline": "2026-06-25",
+      "deadline": "2026-07-15",
       "id": "8hOWC8pbP3E"
     }
   ],
@@ -616,12 +661,6 @@
       "itemId": "11",
       "createdAt": "2026-06-29T03:11:21.099Z",
       "id": "9EJxIiT5qz0"
-    },
-    {
-      "userId": "1",
-      "itemId": "8hOWC8pbP3E",
-      "createdAt": "2026-06-30T01:11:41.116Z",
-      "id": "0TwzvvU"
     }
   ],
   "conversations": [

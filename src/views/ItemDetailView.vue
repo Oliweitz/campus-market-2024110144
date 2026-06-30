@@ -136,7 +136,9 @@ onMounted(async () => {
 
       <template v-if="product.type === 'lostfound'">
         <div class="aux">{{ product.lostOrFound ? LOST_FOUND_LABELS[product.lostOrFound] : '' }}<span v-if="product.eventTime"> &middot; {{ product.eventTime }}</span></div>
+        <div v-if="product.itemName" class="aux">物品: {{ product.itemName }}</div>
         <div v-if="product.itemFeature" class="aux">特征: {{ product.itemFeature }}</div>
+        <div v-if="product.contact" class="aux">联系方式: {{ product.contact }}</div>
         <div class="actions">
           <template v-if="isOwner">
             <button v-if="product.status === '进行中'" class="btn btn-success" @click="itemStore.updateStatus(product.id, '已完成')">已找到</button>
@@ -164,6 +166,13 @@ onMounted(async () => {
 
       <template v-if="product.type === 'errand'">
         <div class="highlight">¥{{ product.reward }}</div>
+        <div v-if="product.taskType" class="aux">任务: {{ product.taskType }}</div>
+        <div v-if="product.from || product.to" class="route-box">
+          <div class="route-node"><span class="route-label">取</span>{{ product.from || '?' }}</div>
+          <div class="route-arrow">→</div>
+          <div class="route-node"><span class="route-label">达</span>{{ product.to || '?' }}</div>
+        </div>
+        <div v-if="product.deadline" class="aux">截止 {{ product.deadline }}</div>
         <div class="aux">{{ product.taskPlace }} &middot; {{ product.expectedTime }}</div>
         <div class="actions">
           <template v-if="isOwner">
@@ -210,6 +219,13 @@ onMounted(async () => {
 .desc { margin-top: 14px; line-height: 1.8; color: var(--text); font-size: 14px; }
 .highlight { font-size: 22px; font-weight: 700; color: var(--danger); margin-top: 16px; } .hl-sub { font-size: 14px; font-weight: 400; color: var(--text-light); }
 .aux { margin-top: 6px; font-size: 14px; color: var(--text-light); }
+.route-line { font-weight: 500; color: var(--text); }
+.route-box { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 12px 16px; background: #f0f4ff; border-radius: 10px; border: 1px dashed #b0c4de; }
+.route-node { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.route-label { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; }
+.route-node:first-child .route-label { background: #f59e0b; }
+.route-node:last-child .route-label { background: #10b981; }
+.route-arrow { font-size: 18px; color: #94a3b8; }
 .actions { display: flex; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
 .btn { padding: 10px 24px; font-size: 14px; font-weight: 500; border: none; border-radius: var(--radius-full); cursor: pointer; text-decoration: none; display: inline-block; transition: all var(--transition); }
 .btn-primary { background: var(--primary); color: #fff; } .btn-primary:hover { box-shadow: 0 4px 12px rgba(91,155,213,0.35); transform: translateY(-1px); }
