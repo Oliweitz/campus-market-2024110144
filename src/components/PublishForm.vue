@@ -42,6 +42,7 @@ const eventTime = ref('')
 const itemFeature = ref('')
 
 // 拼单搭子专属
+const groupType = ref('')
 const targetCount = ref(2)
 const deadline = ref('')
 
@@ -49,6 +50,14 @@ const deadline = ref('')
 const reward = ref('')
 const taskPlace = ref('')
 const expectedTime = ref('')
+
+// 补充字段（Day4 规范要求）
+const category = ref('')
+const itemName = ref('')
+const contact = ref('')
+const taskType = ref('')
+const from = ref('')
+const to = ref('')
 
 // 按字段的错误信息
 const errors = reactive<Record<string, string>>({})
@@ -76,6 +85,9 @@ function validateForm(): boolean {
   }
 
   if (infoType.value === 'secondhand') {
+    if (!category.value.trim()) {
+      errors.category = '请输入商品分类'
+    }
     if (Number(price.value) <= 0) {
       errors.price = '价格应大于 0'
     }
@@ -85,12 +97,18 @@ function validateForm(): boolean {
   }
 
   if (infoType.value === 'lostfound') {
+    if (!itemName.value.trim()) {
+      errors.itemName = '请输入物品名称'
+    }
     if (!eventTime.value) {
       errors.eventTime = '请选择发生时间'
     }
   }
 
   if (infoType.value === 'group') {
+    if (!groupType.value.trim()) {
+      errors.groupType = '请输入拼单类型'
+    }
     if (targetCount.value < 2) {
       errors.targetCount = '目标人数不能少于 2 人'
     }
@@ -100,11 +118,23 @@ function validateForm(): boolean {
   }
 
   if (infoType.value === 'errand') {
+    if (!taskType.value.trim()) {
+      errors.taskType = '请输入任务类型'
+    }
     if (Number(reward.value) < 0) {
       errors.reward = '酬劳不能为负数'
     }
+    if (!from.value.trim()) {
+      errors.from = '请输入取件地点'
+    }
+    if (!to.value.trim()) {
+      errors.to = '请输入送达地点'
+    }
     if (!taskPlace.value.trim()) {
       errors.taskPlace = '请输入任务地点'
+    }
+    if (!deadline.value) {
+      errors.deadline = '请选择截止时间'
     }
   }
 
@@ -124,11 +154,18 @@ function resetForm() {
   lostOrFound.value = 'lost'
   eventTime.value = ''
   itemFeature.value = ''
+  groupType.value = ''
   targetCount.value = 2
   deadline.value = ''
   reward.value = ''
   taskPlace.value = ''
   expectedTime.value = ''
+  category.value = ''
+  itemName.value = ''
+  contact.value = ''
+  taskType.value = ''
+  from.value = ''
+  to.value = ''
   clearErrors()
 }
 
@@ -160,20 +197,28 @@ async function handleSubmit() {
   }
 
   if (infoType.value === 'secondhand') {
+    base.category = category.value || undefined
     base.price = Number(price.value) || 0
     base.condition = condition.value
     base.allowBargain = allowBargain.value
     base.stock = stock.value || 1
   } else if (infoType.value === 'lostfound') {
     base.lostOrFound = lostOrFound.value
+    base.itemName = itemName.value || undefined
     base.eventTime = eventTime.value || undefined
     base.itemFeature = itemFeature.value || undefined
+    base.contact = contact.value || undefined
   } else if (infoType.value === 'group') {
+    base.groupType = groupType.value || undefined
     base.targetCount = targetCount.value
     base.currentCount = 1
     base.deadline = deadline.value || undefined
   } else if (infoType.value === 'errand') {
+    base.taskType = taskType.value
     base.reward = Number(reward.value) || 0
+    base.from = from.value
+    base.to = to.value
+    base.deadline = deadline.value || undefined
     base.taskPlace = taskPlace.value
     base.expectedTime = expectedTime.value
   }
@@ -264,6 +309,9 @@ async function handleSubmit() {
 
         <!-- 二手交易 -->
         <template v-if="infoType === 'secondhand'">
+          <FormField label="商品分类" required :error="errors.category">
+            <input v-model.trim="category" type="text" class="in" placeholder="如：数码配件、教材资料、生活用品" />
+          </FormField>
           <div class="fg-row">
             <div class="fg-half">
               <FormField label="价格 (元)" required :error="errors.price">
@@ -301,16 +349,25 @@ async function handleSubmit() {
               <option value="found">招领</option>
             </select>
           </FormField>
+          <FormField label="物品名称" required :error="errors.itemName">
+            <input v-model.trim="itemName" type="text" class="in" placeholder="请输入物品名称" />
+          </FormField>
           <FormField label="发生时间" required :error="errors.eventTime">
             <input v-model="eventTime" type="date" class="in" />
           </FormField>
           <FormField label="物品特征">
             <input v-model="itemFeature" class="in" placeholder="颜色、大小、特殊标记..." />
           </FormField>
+          <FormField label="联系方式">
+            <input v-model.trim="contact" type="text" class="in" placeholder="如：站内消息联系" />
+          </FormField>
         </template>
 
         <!-- 拼单搭子 -->
         <template v-if="infoType === 'group'">
+          <FormField label="拼单类型" required :error="errors.groupType">
+            <input v-model.trim="groupType" type="text" class="in" placeholder="如：拼餐、资料团购、运动搭子" />
+          </FormField>
           <FormField label="目标人数" required :error="errors.targetCount">
             <input v-model.number="targetCount" type="number" min="2" class="in" placeholder="请输入目标人数" />
           </FormField>
@@ -321,11 +378,29 @@ async function handleSubmit() {
 
         <!-- 跑腿委托 -->
         <template v-if="infoType === 'errand'">
+          <FormField label="任务类型" required :error="errors.taskType">
+            <input v-model.trim="taskType" type="text" class="in" placeholder="如：取快递、代买、代送" />
+          </FormField>
           <FormField label="酬劳 (元)" required :error="errors.reward">
             <input v-model="reward" type="number" min="0" class="in" placeholder="5" />
           </FormField>
+          <div class="fg-row">
+            <div class="fg-half">
+              <FormField label="取件地点" required :error="errors.from">
+                <input v-model.trim="from" type="text" class="in" placeholder="取件地点" />
+              </FormField>
+            </div>
+            <div class="fg-half">
+              <FormField label="送达地点" required :error="errors.to">
+                <input v-model.trim="to" type="text" class="in" placeholder="送达地点" />
+              </FormField>
+            </div>
+          </div>
           <FormField label="任务地点" required :error="errors.taskPlace">
             <input v-model.trim="taskPlace" type="text" class="in" placeholder="具体地点" />
+          </FormField>
+          <FormField label="截止时间" required :error="errors.deadline">
+            <input v-model="deadline" type="datetime-local" class="in" />
           </FormField>
           <FormField label="期望完成时间">
             <input v-model="expectedTime" class="in" placeholder="今晚20:00前" />

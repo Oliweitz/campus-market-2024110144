@@ -49,20 +49,27 @@ export interface Item {
   createdAt: string
   updatedAt: string
   // secondhand 专属
+  category?: string
   price?: number
   condition?: string
   allowBargain?: boolean
   stock?: number
   // lostfound 专属
   lostOrFound?: LostOrFound
+  itemName?: string
   eventTime?: string
   itemFeature?: string
+  contact?: string
   // group 专属
+  groupType?: string
   targetCount?: number
   currentCount?: number
   deadline?: string
   // errand 专属
+  taskType?: string
   reward?: number
+  from?: string
+  to?: string
   taskPlace?: string
   expectedTime?: string
 }
