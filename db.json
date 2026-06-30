@@ -403,7 +403,7 @@
       ],
       "publisherId": "2",
       "status": "进行中",
-      "viewCount": 43,
+      "viewCount": 44,
       "favoriteCount": 1,
       "createdAt": "2026-06-25 08:45:00",
       "updatedAt": "2026-06-25 08:45:00",
@@ -570,7 +570,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 12,
+      "viewCount": 14,
       "favoriteCount": 0,
       "createdAt": "2026-06-29 10:30:34",
       "updatedAt": "2026-06-29 10:30:34",
@@ -616,6 +616,12 @@
       "itemId": "11",
       "createdAt": "2026-06-29T03:11:21.099Z",
       "id": "9EJxIiT5qz0"
+    },
+    {
+      "userId": "1",
+      "itemId": "8hOWC8pbP3E",
+      "createdAt": "2026-06-30T01:11:41.116Z",
+      "id": "0TwzvvU"
     }
   ],
   "conversations": [

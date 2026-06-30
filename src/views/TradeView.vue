@@ -36,6 +36,7 @@
                 <strong class="price">¥{{ item.price }}</strong>
                 <span v-if="item.condition" class="condition">{{ item.condition }}</span>
                 <span class="status" :class="statusClass(item.status)">{{ item.status }}</span>
+                <FavoriteButton :item-id="item.id" />
               </div>
             </template>
           </ItemCard>
@@ -55,6 +56,7 @@
 import { computed, onMounted } from 'vue'
 import { useItemStore } from '@/stores/itemStore'
 import ItemCard from '@/components/ItemCard.vue'
+import FavoriteButton from '@/components/FavoriteButton.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import ErrorState from '@/components/ErrorState.vue'

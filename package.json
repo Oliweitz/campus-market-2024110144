@@ -14,8 +14,7 @@
     "type-check": "vue-tsc --build",
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint . --fix",
-    "lint:eslint": "eslint . --fix --cache",
-    "check": "node scripts/check.mjs"
+    "lint:eslint": "eslint . --fix --cache"
   },
   "dependencies": {
     "axios": "^1.18.1",
