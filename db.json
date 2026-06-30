@@ -319,7 +319,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 60,
+      "viewCount": 61,
       "favoriteCount": 2,
       "createdAt": "2026-06-27 14:00:00",
       "updatedAt": "2026-06-27 14:00:00",
@@ -623,6 +623,33 @@
       "currentCount": 1,
       "deadline": "2026-07-15",
       "id": "8hOWC8pbP3E"
+    },
+    {
+      "type": "errand",
+      "title": "帮忙买一袋洗衣粉",
+      "description": "帮忙到南门外买一袋洗衣服",
+      "campus": "南校区",
+      "location": "南12",
+      "tags": [
+        "跑腿代买"
+      ],
+      "images": [],
+      "publisherId": "1",
+      "publisher": "张三",
+      "publishTime": "2026-06-30 02:30",
+      "status": "进行中",
+      "viewCount": 2,
+      "favoriteCount": 0,
+      "createdAt": "2026-06-30 10:30:15",
+      "updatedAt": "2026-06-30 10:30:15",
+      "taskType": "代买",
+      "reward": 5,
+      "from": "南门",
+      "to": "南12",
+      "deadline": "2026-06-26T10:30",
+      "taskPlace": "校门外任意店铺",
+      "expectedTime": "6/26 9：00之前",
+      "id": "rW8uxpx"
     }
   ],
   "favorites": [

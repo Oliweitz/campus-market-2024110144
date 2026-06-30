@@ -38,6 +38,9 @@ defineProps<{
 
 <style scoped>
 .item-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 18px;
   border-radius: var(--radius-md);
   background: var(--card-bg);
@@ -51,7 +54,7 @@ defineProps<{
   transform: translateY(-1px);
 }
 
-.item-card__top { display: flex; gap: 14px; }
+.item-card__top { display: flex; gap: 14px; flex-shrink: 0; }
 
 .item-card__img {
   width: 100px; height: 75px; flex-shrink: 0;
@@ -60,13 +63,14 @@ defineProps<{
 .item-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .img-fb { width: 100%; height: 100%; background: linear-gradient(135deg, #e8f0fe, #d2e3fc); }
 
-.item-card__main { flex: 1; min-width: 0; }
+.item-card__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 .item-card__header {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .item-card h3 {
@@ -87,10 +91,11 @@ defineProps<{
 }
 
 .description {
-  margin: 12px 0;
+  margin: 8px 0 0;
   color: var(--text-light);
   line-height: 1.6;
   font-size: 14px;
+  flex: 1;
 }
 
 .meta {
@@ -98,11 +103,14 @@ defineProps<{
   gap: 16px;
   color: var(--text-lighter);
   font-size: 13px;
+  margin-top: 10px;
+  flex-shrink: 0;
 }
 
 .footer {
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
 }
 </style>

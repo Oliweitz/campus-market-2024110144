@@ -85,7 +85,8 @@ onMounted(async () => {
 .back-btn { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-full); font-size: 13px; color: var(--text-light); cursor: pointer; padding: 6px 16px; margin-bottom: 12px; transition: all var(--transition); }
 .back-btn:hover { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
 .list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.card-link { text-decoration: none; color: inherit; display: block; }
+.card-link { text-decoration: none; color: inherit; display: flex; height: 100%; }
+.card-link > * { flex: 1; }
 .card-footer { display: flex; align-items: center; gap: 10px; }
 .price { font-size: 16px; color: var(--danger); }
 .condition { font-size: 13px; color: var(--text-light); }

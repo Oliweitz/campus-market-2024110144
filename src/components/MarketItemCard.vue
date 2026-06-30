@@ -38,7 +38,7 @@ defineProps<{ item: Item }>()
 </template>
 
 <style scoped>
-.list-card { display: flex; align-items: stretch; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: all var(--transition); overflow: hidden; }
+.list-card { display: flex; align-items: center; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: all var(--transition); overflow: hidden; }
 .list-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .card-body { flex: 1; display: flex; gap: 14px; padding: 14px 16px; text-decoration: none; color: var(--text); align-items: center; }
 .card-img-wrap { width: 80px; height: 60px; flex-shrink: 0; border-radius: 8px; overflow: hidden; }

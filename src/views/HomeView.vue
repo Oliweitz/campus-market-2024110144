@@ -131,7 +131,7 @@ onMounted(async () => {
 .block-head h3 { font-size: 15px; font-weight: 600; }
 .more { font-size: 13px; color: var(--primary); text-decoration: none; } .more:hover { text-decoration: underline; }
 .card-list { display: flex; flex-direction: column; gap: 8px; }
-.card-row { display: flex; align-items: stretch; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: all var(--transition); overflow: hidden; padding-right: 8px; }
+.card-row { display: flex; align-items: center; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); transition: all var(--transition); overflow: hidden; padding-right: 8px; }
 .card-row:hover { box-shadow: var(--shadow-md); transform: translateX(3px); }
 .card { display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; color: var(--text); flex: 1; }
 .card-img { width: 44px; height: 44px; border-radius: var(--radius-sm); flex-shrink: 0; }
