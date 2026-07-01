@@ -503,7 +503,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 86,
+      "viewCount": 87,
       "favoriteCount": 2,
       "createdAt": "2026-06-26 16:00:00",
       "updatedAt": "2026-06-26 16:00:00",
@@ -636,7 +636,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 15,
+      "viewCount": 16,
       "favoriteCount": 0,
       "createdAt": "2026-06-29 10:30:34",
       "updatedAt": "2026-06-29 10:30:34",
@@ -815,5 +815,7 @@
       "createdAt": "2026-06-25 10:00:00"
     }
   ],
+  "carts": [],
+  "orders": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

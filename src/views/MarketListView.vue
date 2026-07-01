@@ -6,6 +6,9 @@ import { useFavoriteStore } from '@/stores/favorite'
 import { type ItemType, type ItemStatus } from '@/data/listings'
 import MarketFilterBar from '@/components/MarketFilterBar.vue'
 import MarketItemCard from '@/components/MarketItemCard.vue'
+import LoadingState from '@/components/LoadingState.vue'
+import ErrorState from '@/components/ErrorState.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 const route = useRoute()
 const itemStore = useItemStore()
@@ -41,8 +44,16 @@ onMounted(async () => { await itemStore.fetchItems() })
   <section>
     <h2 class="page-title">校园集市</h2>
     <MarketFilterBar v-model="filters" />
-    <div v-if="itemStore.loading" class="empty-state"><p>加载中...</p></div>
-    <div v-else-if="itemStore.error" class="empty-state"><p>{{ itemStore.error }}</p><span>请检查 Mock 服务是否已启动</span></div>
+
+    <LoadingState v-if="itemStore.loading" text="正在加载校园信息..." />
+
+    <ErrorState
+      v-else-if="itemStore.error"
+      :message="itemStore.error"
+      show-retry
+      @retry="itemStore.fetchItems"
+    />
+
     <template v-else-if="pagedList.length">
       <div class="list"><MarketItemCard v-for="item in pagedList" :key="item.id" :item="item" /></div>
       <div v-if="totalPages > 1" class="pager">
@@ -51,17 +62,14 @@ onMounted(async () => { await itemStore.fetchItems() })
         <button :disabled="currentPage === totalPages" @click="currentPage++">&raquo;</button>
       </div>
     </template>
-    <div v-else class="empty-state"><div class="empty-icon">~</div><p>没有找到匹配的信息</p><span>试试调整筛选条件</span></div>
+
+    <EmptyState v-else text="没有找到匹配的信息" hint="试试调整筛选条件" />
   </section>
 </template>
 
 <style scoped>
 .page-title { font-size: 18px; font-weight: 600; margin: 0 0 16px; color: var(--text); }
 .list { display: flex; flex-direction: column; gap: 10px; }
-.empty-state { text-align: center; padding: 60px 0; color: var(--text-light); }
-.empty-icon { font-size: 40px; color: var(--text-lighter); margin-bottom: 12px; }
-.empty-state p { margin: 0; font-size: 15px; }
-.empty-state span { font-size: 13px; color: var(--text-lighter); }
 .pager { display: flex; justify-content: center; gap: 4px; margin-top: 20px; }
 .pager button { width: 34px; height: 34px; border: none; border-radius: 50%; background: var(--card-bg); box-shadow: var(--shadow-sm); font-size: 13px; color: var(--text); cursor: pointer; transition: all var(--transition); }
 .pager button:hover { background: var(--bg); }

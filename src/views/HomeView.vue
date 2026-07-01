@@ -4,14 +4,21 @@ import { useUserStore } from '@/stores/user'
 import { useItemStore } from '@/stores/itemStore'
 import { useFavoriteStore } from '@/stores/favorite'
 import { useMessageStore } from '@/stores/messageStore'
+import { useCartStore } from '@/stores/cart'
+import { useOrdersStore } from '@/stores/orders'
 import { TYPE_LABELS, type ItemType } from '@/data/listings'
 import SafetyNotice from '@/components/SafetyNotice.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
+import LoadingState from '@/components/LoadingState.vue'
+import ErrorState from '@/components/ErrorState.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 const userStore = useUserStore()
 const itemStore = useItemStore()
 const favStore = useFavoriteStore()
 const msgStore = useMessageStore()
+const cartStore = useCartStore()
+const ordersStore = useOrdersStore()
 
 const typeEntries: { key: ItemType; label: string; desc: string; gradient: string; route: string }[] = [
   { key: 'secondhand', label: '二手交易', desc: '闲置好物，物美价廉', gradient: 'linear-gradient(135deg, #e8f5e9, #c8e6c9)', route: '/trade' },
@@ -32,6 +39,8 @@ onMounted(async () => {
   await itemStore.fetchItems()
   await favStore.fetchFavorites()
   await msgStore.fetchConversations()
+  cartStore.syncFromServer()
+  ordersStore.syncFromServer()
 })
 </script>
 
@@ -50,6 +59,27 @@ onMounted(async () => {
     </router-link>
 
     <SafetyNotice />
+
+    <!-- 加载状态 -->
+    <LoadingState v-if="itemStore.loading" text="正在加载校园信息..." />
+
+    <!-- 错误状态 -->
+    <ErrorState
+      v-else-if="itemStore.error"
+      :message="itemStore.error"
+      show-retry
+      @retry="itemStore.fetchItems"
+    />
+
+    <!-- 空状态 -->
+    <EmptyState
+      v-else-if="itemStore.items.length === 0"
+      text="暂无校园信息"
+      hint="快去发布第一条信息吧"
+    />
+
+    <!-- 正常内容 -->
+    <template v-else>
 
     <div class="type-grid">
       <router-link v-for="t in typeEntries" :key="t.key" :to="t.route" class="type-card" :style="{ background: t.gradient }">
@@ -95,6 +125,7 @@ onMounted(async () => {
       <router-link to="/user" class="ql-btn ql-profile">收藏 {{ favStore.count }}</router-link>
       <router-link to="/dashboard" class="ql-btn ql-dash">看板</router-link>
     </div>
+    </template>
   </section>
 </template>
 
