@@ -23,7 +23,7 @@ export const useFavoriteStore = defineStore('favorite', () => {
     if (!uid) return
     loading.value = true
     try {
-      const res = await favoriteApi.getFavoritesByUser(uid)
+      const res = await favoriteApi.getFavoritesByUser(Number(uid))
       favorites.value = res.data
     } catch (e) {
       console.error('[favoriteStore] fetchFavorites:', e)
@@ -49,7 +49,7 @@ export const useFavoriteStore = defineStore('favorite', () => {
       } catch { return true }
     } else {
       try {
-        const res = await favoriteApi.addFavorite({ userId: uid, itemId })
+        const res = await favoriteApi.addFavorite({ userId: Number(uid), itemId: Number(itemId) })
         favorites.value.push(res.data)
         itemStore.syncFavoriteCount(itemId, 1)
         return true

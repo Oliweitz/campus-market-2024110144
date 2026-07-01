@@ -65,6 +65,17 @@
         "first_checkin",
         "streak_7"
       ]
+    },
+    {
+      "username": "tiansuohaoer",
+      "nickname": "野兽仙贝",
+      "password": "114514",
+      "college": "计算机学院",
+      "campus": "南校区",
+      "role": "学生",
+      "creditScore": 80,
+      "createdAt": "2026-07-01T06:02:32.554Z",
+      "id": "FdNxYVj"
     }
   ],
   "items": [

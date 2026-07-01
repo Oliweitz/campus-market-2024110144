@@ -76,7 +76,7 @@ export const useUserStore = defineStore('user', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await userApi.getUserById(currentUserId.value)
+      const res = await userApi.getUserById(Number(currentUserId.value))
       profile.value = res.data
       saveAuth(res.data)
     } catch {
@@ -163,7 +163,7 @@ export const useUserStore = defineStore('user', () => {
     if (!currentUserId.value) return
     loading.value = true
     try {
-      const res = await userApi.updateUser(currentUserId.value, data)
+      const res = await userApi.updateUser(Number(currentUserId.value), data)
       profile.value = res.data
       saveAuth(res.data)
     } catch (e) {
