@@ -2,7 +2,9 @@
 
 ## 1. 今日完成内容
 
-完成了 Day6 的交互优化与体验完善工作。为四个分类列表页面集成了关键词搜索功能，重构了导航栏为下拉菜单结构，清理了 Element Plus 362KB 死依赖，并通过三路并行代码审查发现并修复了 5 项高严重度缺陷。项目通过了完整功能走查，具备 Day7 验收展示条件。
+完成了 Day6 的交互优化与体验完善工作。为四个分类列表页面集成了关键词搜索功能，重构了导航栏为下拉菜单结构，清理了 Element Plus 362KB 死依赖，并通过三路并行代码审查发现并修复了 5 项高严重度缺陷。
+
+本日补充优化：统一了 MarketListView 的状态展示组件（裸 div 替换为 LoadingState/ErrorState/EmptyState），为 HomeView 首页补充了加载/错误/空三种状态反馈，并将购物车和订单从纯 localStorage 升级为 localStorage 缓存 + JSON Server 双写持久化，解决了清浏览器缓存后数据丢失的问题。项目通过了完整功能走查，具备 Day7 验收展示条件。
 
 ## 2. 体验优化清单
 
@@ -16,6 +18,10 @@
 | 表单提交反馈 | PublishForm.vue | 提交中按钮禁用 + "提交中..."文案防止重复提交 |
 | 收藏状态展示 | FavoriteButton.vue | ★/☆ 图标 + "已收藏"/"收藏"文字 + 背景色三态区分 |
 | 冗余依赖清理 | package.json、main.ts | 移除 element-plus 362KB 未使用的 CSS 导入 |
+| 列表页状态统一 | MarketListView.vue | 裸 div 替换为 LoadingState/ErrorState/EmptyState 正式组件 |
+| 首页状态反馈 | HomeView.vue | 补充 loading/error/empty 三种状态，停止 Mock 服务后不再静默空白 |
+| 购物车持久化 | cart.ts、cartApi.ts、db.json | localStorage 缓存 + JSON Server 双写，清缓存/换设备不丢数据 |
+| 订单持久化 | orders.ts、db.json | 同上双写策略，购买记录跟随用户而非浏览器 |
 
 ## 3. 问题修复记录
 
@@ -30,6 +36,14 @@
 | 高 | `db.json` 消息 senderId 类型不一致（大部分为字符串，一条为数字） | `db.json:767` | 统一为字符串 `"senderId": "2"` |
 
 此外还发现：SearchBar.vue 原为孤组件零引用（已接入四视图）、四个列表视图完全无搜索功能（已补充）、导航栏缺少分类页入口（已改造为下拉菜单）。
+
+**补充修复（本日第二轮审查）：**
+
+| 严重度 | 问题 | 位置 | 修复方式 |
+|---|---|---|---|
+| 中 | MarketListView 使用裸 `<div>` 展示加载/错误状态，与其他四个视图的 LoadingState/ErrorState 组件不一致 | `MarketListView.vue:44-45` | 替换为 LoadingState/ErrorState/EmptyState 正式组件，删除废弃的 CSS 样式 |
+| 中 | HomeView 首页无任何请求状态处理，Mock 服务停止后"最新发布"和"热门推荐"区域静默空白 | `HomeView.vue` | 新增三种状态判断（loading/error/empty），插入在 SafetyNotice 与数据区域之间 |
+| 高 | 购物车和订单仅存储在 localStorage，清浏览器缓存后数据永久丢失，换设备也无法同步 | `cart.ts`、`orders.ts` | 升级为双写策略：localStorage 作快速缓存 + JSON Server 作持久化存储。新增 `carts`/`orders` 集合到 db.json，新建 cartApi.ts，登录后自动从服务端同步
 
 ## 4. AI 协作记录
 

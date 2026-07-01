@@ -288,3 +288,27 @@ Day3 实训手册要求对「我的设计」和「AI 设计」做明确比较。
   2. **证据卡不应事后补写**：Day5 代码在前期就已实现，但证据卡直到今天才补写。事后补写的问题在于：测试记录只能基于代码推演而非记忆中的实际操作，AI 建议筛选的细节已丢失（哪些建议采纳了、哪些拒绝了、为什么）。证据卡的最佳实践是开发过程中同步记录
   3. **审查模式下 AI 的角色更像"代码审查员"**：不直接写新功能代码，而是帮助梳理已有代码的合理性。本次 AI 正确识别了表单校验错误（保留在组件内）、搜索关键词（保留在组件内）、可折叠面板状态（保留在组件内）都未进入 Store——这说明 AI 对"状态边界"的理解是正确的。但 AI 对运行时行为（如收藏按钮点击后 DOM 是否真的更新）无法验证，必须人工执行
   4. **指令需要明确目标文件**：用户说"写 AI 协作记录"，AI 默认修改了 `Day5_Evidence.md` 中的第 5 节。用户实际指的是 `docs/ai/AI_Collaboration_Card.md`。当项目中有多个可能的目标文件时，AI 应主动询问而非假设——这是本次协作中的一次沟通偏差
+
+---
+
+### 35. Day6 补充优化：状态组件统一 + 数据持久化升级
+
+- **Prompt**：用户提供了 Day6 实训任务文档全文（约 6000 字），同时要求"结合刚刚的数据结构问题一起改掉"。数据结构问题指之前讨论中发现的购物车/订单仅存 localStorage、清浏览器缓存会丢失的问题
+
+- **AI 输出**：AI 先扫描了所有现有代码（LoadingState/ErrorState/SearchBar 组件、四个列表视图、HomeView、MarketListView、cart/orders Store、db.json），完成缺口分析后按优先级实施了 4 项改动：
+  1. **MarketListView 状态组件统一**：发现该视图使用裸 `<div class="empty-state">` 展示加载/错误状态，与其他四个视图（TradeView/LostFoundView/GroupBuyView/ErrandView）使用的 LoadingState/ErrorState 正式组件不一致。替换为标准组件，删除废弃的 CSS（`.empty-state`/`.empty-icon` 共 6 行样式），补充了组件 import
+  2. **HomeView 首页状态反馈**：发现首页的"最新发布"和"热门推荐"区域完全没有请求状态处理——Mock 服务停止后这两个区域静默空白，用户无法判断是加载中还是出错了。在 SafetyNotice 和内容区域之间插入 `v-if/v-else-if/v-else` 三态判断链，LoadingState 显示"正在加载校园信息..."，ErrorState 带重试按钮调用 `itemStore.fetchItems`，EmptyState 引导用户发布第一条信息
+  3. **购物车迁移到 JSON Server**：将 `cart.ts` 从纯 localStorage 升级为双写策略。核心改动——`addToCart` 增加 `cartApi.add()` 调用（异步 `.catch(()=>{})` 静默失败），`removeFromCart` 增加 `cartApi.remove()`，`updateQuantity` 增加 `cartApi.update()`，新增 `syncFromServer()` 方法在登录后自动从 `/carts?userId=1` 拉取服务端数据。首次迁移逻辑：若 localStorage 有数据但服务端无数据，自动将本地购物车上传到 JSON Server
+  4. **订单迁移到 JSON Server**：`orders.ts` 同样双写改造。`addOrder` 增加 `POST /orders`，新增 `syncFromServer()`。订单的 `addOrder` 仍保持 `Date.now()` 生成 ID（不与服务端 ID 冲突），时间使用 `toLocaleString('zh-CN')` 保证可读性
+  5. **基础设施同步**：`db.json` 新增 `"carts": []` 和 `"orders": []` 空集合；新建 `src/api/cartApi.ts` 封装购物车 CRUD（getByUser/add/update/remove/clearByUser）；`HomeView.vue` 的 `onMounted` 中新增 `cartStore.syncFromServer()` 和 `ordersStore.syncFromServer()` 调用
+
+- **修改**：
+  1. 购物车双写策略设计——最初方案是完全去掉 localStorage 只走 API，审查后改为 localStorage + API 双写：localStorage 保证毫秒级首屏加载和离线可用，API 保证跨设备同步。API 写操作全部 `.catch(()=>{})` 静默失败，不阻塞 UI
+  2. cartApi 的 `getByUser` 使用查询参数 `{ params: { userId: String(uid) } }`，与 JSON Server 的过滤语法对齐
+  3. HomeView 状态判断顺序按 Day6 规范要求：loading → error → empty → 正常内容，错误优先于空状态
+
+- **结论**：
+  1. **组件不一致是渐进开发的自然结果**：四个分类视图在 Day6 前期统一改造时都用了正式组件，但 MarketListView 是更早创建的"总列表页"，当时状态组件尚未抽取，导致遗留了裸 div。AI 的对比审查能快速发现这种"同一页面不同时期"导致的不一致
+  2. **静默空白是前端最差的体验**：没有 loading 用户不知道在加载，没有 error 用户不知道出错了，没有 empty 用户不知道是没数据。三种状态缺任何一种，用户都会困惑。HomeView 之前的安全提醒、分类卡片、快捷入口都能正常显示，唯独数据区域静默失败——这种"半正常"的页面比全白屏更隐蔽
+  3. **数据持久化是可信赖应用的底线**：用户不会理解"清缓存会丢"这个技术概念，他们只会觉得"这个应用把我的数据搞丢了"。双写策略（localStorage + API）在可靠性和性能之间取了平衡——localStorage 是给用户的速度体验，JSON Server 是给用户的安全保障。`.catch(()=>{})` 的设计确保了"API 挂了不影响使用"的降级能力
+  4. **首次迁移逻辑的价值**：syncFromServer 中的"本地有但服务端无→自动上传"逻辑，让存量用户的本地数据在升级后自动迁移到服务端，无需手动操作。这是实际项目中数据迁移的常见模式
