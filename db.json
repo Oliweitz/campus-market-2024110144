@@ -43,6 +43,28 @@
       "creditScore": 80,
       "createdAt": "2026-06-29T01:35:33.460Z",
       "id": "OtQCn8H1f-o"
+    },
+    {
+      "id": "u_001",
+      "username": "demo",
+      "password": "123456",
+      "email": "demo@xhzz.com",
+      "avatar": "",
+      "nickname": "学海旅人",
+      "bio": "学海无涯，知舟为伴",
+      "createdAt": "2026-06-01T00:00:00Z",
+      "stats": {
+        "totalStudyHours": 48,
+        "totalCheckins": 24,
+        "streakDays": 5,
+        "maxStreakDays": 12,
+        "goalsCompleted": 3,
+        "booksRead": 2
+      },
+      "badges": [
+        "first_checkin",
+        "streak_7"
+      ]
     }
   ],
   "items": [
