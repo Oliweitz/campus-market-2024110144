@@ -4,7 +4,7 @@
 // ============================================================
 
 import request from './request'
-import type { CartItem } from '@/stores/cart'
+import type { CartItem } from '@/stores/cartStore'
 
 export interface CartRecord {
   id?: number | string
