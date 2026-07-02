@@ -656,33 +656,6 @@
       "currentCount": 1,
       "deadline": "2026-07-15",
       "id": "8hOWC8pbP3E"
-    },
-    {
-      "type": "secondhand",
-      "title": "帮做数据处理",
-      "description": "帮忙做实验大批量数据处理",
-      "campus": "南校区",
-      "location": "都可以",
-      "tags": [
-        "数据处理，实验"
-      ],
-      "images": [
-        "/uploads/1782953406372-746109191.png"
-      ],
-      "publisherId": "1",
-      "publisher": "张三",
-      "publishTime": "2026-07-02 00:52",
-      "status": "进行中",
-      "viewCount": 1,
-      "favoriteCount": 0,
-      "createdAt": "2026-07-02 08:52:08",
-      "updatedAt": "2026-07-02 08:52:08",
-      "category": "教材资料",
-      "price": 50,
-      "condition": "全新",
-      "allowBargain": true,
-      "stock": 100,
-      "id": "aewg0Rv"
     }
   ],
   "favorites": [

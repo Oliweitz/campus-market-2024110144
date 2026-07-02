@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useItemStore } from '@/stores/itemStore'
@@ -247,11 +247,16 @@ function handlePaste(e: ClipboardEvent) {
   }
 
   if (imageFiles.length) {
-    e.preventDefault() // 阻止默认粘贴（图片不会粘贴到文本框中）
+    e.preventDefault()
+    e.stopPropagation()
     processFiles(imageFiles)
   }
-  // 如果没有图片，不阻止，允许正常文本粘贴
+  // 无图片时不拦截，正常文本粘贴继续
 }
+
+// 全局捕获阶段监听 — 支持右键粘贴、任意位置 Ctrl+V
+onMounted(() => document.addEventListener('paste', handlePaste, true))
+onUnmounted(() => document.removeEventListener('paste', handlePaste, true))
 
 function handleDrop(e: DragEvent) {
   const dt = e.dataTransfer
@@ -334,7 +339,7 @@ async function handleSubmit() {
     </div>
 
     <div v-if="userStore.isLoggedIn" class="publish-form">
-      <form @submit.prevent="handleSubmit" @paste="handlePaste">
+      <form @submit.prevent="handleSubmit">
         <!-- 内联通知条 -->
         <Transition name="notify">
           <div v-if="notify.show" :class="['notify-bar', 'notify-' + notify.type]">
