@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useItemStore } from '@/stores/itemStore'
-import { useFavoriteStore } from '@/stores/favorite'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import { type ItemType, type ItemStatus } from '@/data/listings'
 import MarketFilterBar from '@/components/MarketFilterBar.vue'
 import MarketItemCard from '@/components/MarketItemCard.vue'

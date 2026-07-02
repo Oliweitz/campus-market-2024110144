@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFavoriteStore } from '@/stores/favorite'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 
 const props = defineProps<{ itemId: string | number }>()
 const favStore = useFavoriteStore()

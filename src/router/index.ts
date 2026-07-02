@@ -32,7 +32,7 @@ const router = createRouter({
     {
       path: '/user',
       name: 'user',
-      component: () => import('@/views/UserCenterView.vue'),
+      component: () => import('@/views/ProfileView.vue'),
     },
     {
       path: '/dashboard',

@@ -2,7 +2,7 @@
 // 校园轻集市 — 收藏 API
 // ============================================================
 
-import request from './http'
+import request from './request'
 import type { Favorite } from '@/data/listings'
 
 export const favoriteApi = {

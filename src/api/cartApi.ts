@@ -3,7 +3,7 @@
 // 数据源: JSON Server /carts
 // ============================================================
 
-import request from './http'
+import request from './request'
 import type { CartItem } from '@/stores/cart'
 
 export interface CartRecord {

@@ -5,7 +5,7 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { useOrdersStore } from '@/stores/orders'
 import { useItemStore } from '@/stores/itemStore'
 import { cartApi } from '@/api/cartApi'

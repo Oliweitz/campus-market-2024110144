@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { useItemStore } from '@/stores/itemStore'
-import { useFavoriteStore } from '@/stores/favorite'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import { useMessageStore } from '@/stores/messageStore'
 import { useCartStore } from '@/stores/cart'
 import { useOrdersStore } from '@/stores/orders'

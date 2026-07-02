@@ -5,8 +5,8 @@
 
 import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
-import { useUserStore } from '@/stores/user'
-import request from '@/api/http'
+import { useUserStore } from '@/stores/userStore'
+import request from '@/api/request'
 
 const STORAGE_KEY = 'campus_market_orders'
 

@@ -7,7 +7,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { favoriteApi } from '@/api/favoriteApi'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { useItemStore } from '@/stores/itemStore'
 import type { Favorite } from '@/data/listings'
 

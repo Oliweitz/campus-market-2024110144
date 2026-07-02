@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import { useItemStore } from '@/stores/itemStore'
 import { TYPE_LABELS, CAMPUS_LIST, CONDITION_OPTIONS, type ItemType, type LostOrFound } from '@/data/listings'
 import { now } from '@/utils/date'

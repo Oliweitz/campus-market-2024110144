@@ -73,8 +73,8 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useFavoriteStore } from '@/stores/favorite'
+import { useUserStore } from '@/stores/userStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import { useMessageStore } from '@/stores/messageStore'
 
 const router = useRouter()

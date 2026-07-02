@@ -2,7 +2,7 @@
 // 校园轻集市 — 安全提醒 / 通知 API
 // ============================================================
 
-import request from './http'
+import request from './request'
 import type { Notice, NoticeType } from '@/data/listings'
 
 export const noticeApi = {

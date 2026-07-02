@@ -2,7 +2,7 @@
 // 校园轻集市 — 校园信息 API
 // ============================================================
 
-import request from './http'
+import request from './request'
 import type { Item, ItemType, ItemStatus } from '@/data/listings'
 
 export const itemApi = {

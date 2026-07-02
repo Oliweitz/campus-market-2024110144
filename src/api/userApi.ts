@@ -2,7 +2,7 @@
 // 校园轻集市 — 用户 API
 // ============================================================
 
-import request from './http'
+import request from './request'
 import type { User } from '@/data/listings'
 
 export const userApi = {

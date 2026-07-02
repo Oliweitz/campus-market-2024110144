@@ -2,7 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useItemStore } from '@/stores/itemStore'
 import { useCartStore } from '@/stores/cart'
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/userStore'
 import AppHeader from '@/components/AppHeader.vue'
 import AppNav from '@/components/AppNav.vue'
 
