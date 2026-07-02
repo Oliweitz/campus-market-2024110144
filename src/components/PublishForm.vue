@@ -391,7 +391,9 @@ async function handleSubmit() {
 
         <FormField label="图片">
           <div
+            contenteditable="true"
             class="img-upload-area"
+            @input="($event.target as HTMLElement).textContent = ''"
             @dragover.prevent
             @dragenter.prevent
             @drop.prevent="handleDrop"
@@ -600,6 +602,8 @@ button:disabled { cursor: not-allowed; opacity: 0.7; }
   transition: border-color var(--transition);
   align-items: flex-start;
   align-content: flex-start;
+  caret-color: transparent;  /* 隐藏 contenteditable 文本光标 */
+  outline: none;              /* 隐藏聚焦轮廓 */
 }
 .img-upload-area:hover { border-color: var(--primary); }
 
