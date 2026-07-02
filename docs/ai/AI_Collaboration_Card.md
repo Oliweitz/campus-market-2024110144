@@ -363,3 +363,24 @@ Day3 实训手册要求对「我的设计」和「AI 设计」做明确比较。
   2. **"不过度抽象"是教学项目的关键原则**：全局 Toast 组件需要 provide/inject 或 store 传递状态，对教学项目来说过度复杂。组件内通知条 30 行代码解决问题，维护成本极低
   3. **审计驱动的优化比盲目堆功能更有价值**：对照规范文档逐项审查 → 定位唯一薄弱点 → 精准修复。这种模式比"想到什么改什么"高效得多
   4. **600ms 延迟的价值**：发布成功是用户最关心的反馈，如果立即跳转用户看不到任何确认信息就会怀疑"到底发没发出去"。600ms 刚好够看完通知再跳转
+
+### 38. Bug 修复：粘贴图片的两轮问题排查
+
+- **Prompt**：我发现测试端不能按鼠标右键粘贴我复制的照片怎么办 → 那为什么我在图片上传的框里点右键上传不了，但是在文本框里却可以
+
+- **问题诊断**：用户报告了两轮粘贴问题：
+  - **第一轮**：所有粘贴都不工作 → 根因是 `@paste` 绑在 `<form>` 元素上，事件冒泡只在 input/textarea 聚焦时才能到达 form。修复为 `document.addEventListener('paste', handler, true)`（捕获阶段全局监听）
+  - **第二轮**：Ctrl+V 在文本框里可以、在上传区右键粘贴不行 → 根因是浏览器的安全限制——右键菜单的"粘贴"命令**只在可编辑元素**（input/textarea/contenteditable）上触发 `paste` 事件。`<div>` 即使绑了 paste 监听，浏览器也不会为其触发右键粘贴事件
+
+- **AI 输出**：
+  1. **第一轮修复（form → document 捕获）**：将 paste 监听从 form 元素提升到 document 捕获阶段。优点是无论焦点在哪里，Ctrl+V 都能被拦截；缺点是右键粘贴仍受浏览器限制——document 能监听到的 paste 事件必须以可编辑元素为目标
+  2. **第二轮修复（contenteditable）**：给上传区域 div 添加 `contenteditable="true"`，使浏览器认为它是一个合法的粘贴目标。同时添加 `@input` 清空意外键入的文字、CSS `caret-color: transparent` 隐藏文本光标。仅 4 行代码改动
+
+- **修改**：
+  1. 从 `onMounted(() => document.addEventListener('paste', handlePaste, true))` 到 `contenteditable="true"`，两次修复层层递进
+  2. contenteditable 方案考虑了视觉副作用：隐藏光标（caret-color）、隐藏聚焦框（outline: none）、清空键入内容（@input），用户感知不到任何差异
+
+- **结论**：
+  1. **事件监听的层级选择**：form 级 → 适合子元素聚焦时的事件冒泡；document 捕获级 → 适合全局快捷键；contenteditable → 解决浏览器对"可粘贴元素"的限制。三种层级各司其职
+  2. **右键粘贴 vs Ctrl+V 是不同的底层机制**：Ctrl+V 触发键盘事件→浏览器查找当前焦点元素→向其发送 paste 事件；右键粘贴先出菜单→用户点击"粘贴"→浏览器检查焦点元素是否可编辑→是则触发 paste。div 不可编辑，所以第二步直接跳过
+  3. **contenteditable 的正确用法**：只想要粘贴能力时不需完整的 contenteditable 功能——通过 `@input` 清空内容 + CSS 隐藏光标，将其降级为"纯粘贴接收器"
