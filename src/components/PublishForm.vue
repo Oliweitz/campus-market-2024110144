@@ -28,7 +28,21 @@ const description = ref('')
 const campus = ref(userStore.campus || CAMPUS_LIST[0]!)
 const location = ref('')
 const tags = ref('')
-const images = ref(['', '', ''])
+const images = ref<string[]>([])
+const uploading = ref(false)
+
+// ---------- 内联通知（替代 window.alert）----------
+type NotifyType = 'success' | 'error' | 'info'
+const notify = reactive({ show: false, type: 'info' as NotifyType, message: '' })
+let notifyTimer: ReturnType<typeof setTimeout> | null = null
+
+function showNotification(type: NotifyType, message: string, duration = 3500) {
+  if (notifyTimer) clearTimeout(notifyTimer)
+  notify.show = true
+  notify.type = type
+  notify.message = message
+  notifyTimer = setTimeout(() => { notify.show = false }, duration)
+}
 
 // 二手交易专属
 const price = ref('')
@@ -146,7 +160,7 @@ function resetForm() {
   description.value = ''
   location.value = ''
   tags.value = ''
-  images.value = ['', '', '']
+  images.value = []
   price.value = ''
   condition.value = ''
   allowBargain.value = true
@@ -172,6 +186,83 @@ function resetForm() {
 // 类型切换时重置
 watch(infoType, () => resetForm())
 
+// ---------- 图片上传 ----------
+async function uploadSingleImage(file: File): Promise<string | null> {
+  try {
+    const res = await itemStore.uploadImage(file)
+    return res.url
+  } catch (e: any) {
+    const msg = e?.response?.data?.error || e?.message || '上传失败'
+    showNotification('error', '图片上传失败: ' + msg)
+    return null
+  }
+}
+
+async function processFiles(files: File[]) {
+  const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+  const MAX_COUNT = 9
+
+  const validFiles = files.filter((f) => {
+    if (!f.type.startsWith('image/')) {
+      showNotification('info', `"${f.name}" 不是图片文件，已跳过`)
+      return false
+    }
+    if (f.size > MAX_SIZE) {
+      showNotification('info', `"${f.name}" 超过 5MB 限制，已跳过`)
+      return false
+    }
+    return true
+  })
+
+  if (images.value.length + validFiles.length > MAX_COUNT) {
+    showNotification('info', `最多上传 ${MAX_COUNT} 张图片，当前已有 ${images.value.length} 张`)
+    return
+  }
+
+  uploading.value = true
+  for (const file of validFiles) {
+    const url = await uploadSingleImage(file)
+    if (url) images.value.push(url)
+  }
+  uploading.value = false
+}
+
+function handleFileSelect(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (!input.files?.length) return
+  processFiles(Array.from(input.files))
+  input.value = '' // 重置，允许重复选同一文件
+}
+
+function handlePaste(e: ClipboardEvent) {
+  const items = e.clipboardData?.items
+  if (!items) return
+
+  const imageFiles: File[] = []
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile()
+      if (file) imageFiles.push(file)
+    }
+  }
+
+  if (imageFiles.length) {
+    e.preventDefault() // 阻止默认粘贴（图片不会粘贴到文本框中）
+    processFiles(imageFiles)
+  }
+  // 如果没有图片，不阻止，允许正常文本粘贴
+}
+
+function handleDrop(e: DragEvent) {
+  const dt = e.dataTransfer
+  if (!dt?.files?.length) return
+  processFiles(Array.from(dt.files))
+}
+
+function removeImage(idx: number) {
+  images.value.splice(idx, 1)
+}
+
 async function handleSubmit() {
   if (!validateForm()) return
 
@@ -185,7 +276,7 @@ async function handleSubmit() {
     campus: campus.value,
     location: location.value,
     tags: tags.value ? tags.value.split(',').map((t) => t.trim()).filter(Boolean) : [],
-    images: images.value.filter((u) => u.trim()),
+    images: images.value,
     publisherId: userStore.currentUserId!,
     publisher: userStore.nickname || '当前用户',
     publishTime: getCurrentTime(),
@@ -225,8 +316,8 @@ async function handleSubmit() {
 
   try {
     const item = await itemStore.createItem(base as any)
-    window.alert(TYPE_LABELS[infoType.value] + '发布成功')
-    router.push(TYPE_REDIRECT[infoType.value])
+    showNotification('success', TYPE_LABELS[infoType.value] + '发布成功')
+    setTimeout(() => router.push(TYPE_REDIRECT[infoType.value]), 600)
   } catch {
     errors.submit = '发布失败，请检查 Mock 服务是否正常运行'
   } finally {
@@ -243,7 +334,15 @@ async function handleSubmit() {
     </div>
 
     <div v-if="userStore.isLoggedIn" class="publish-form">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit" @paste="handlePaste">
+        <!-- 内联通知条 -->
+        <Transition name="notify">
+          <div v-if="notify.show" :class="['notify-bar', 'notify-' + notify.type]">
+            <span class="notify-icon">{{ notify.type === 'success' ? '✓' : notify.type === 'error' ? '✕' : 'ℹ' }}</span>
+            {{ notify.message }}
+          </div>
+        </Transition>
+
         <FormField label="发布类型" required>
           <div class="type-row">
             <button
@@ -286,25 +385,42 @@ async function handleSubmit() {
         </FormField>
 
         <FormField label="图片">
-          <div class="img-inputs">
-            <input
-              v-for="(_, idx) in images"
-              :key="idx"
-              v-model="images[idx]"
-              :placeholder="'图片链接 ' + (idx + 1)"
-              class="in img-url"
-            />
+          <div
+            class="img-upload-area"
+            @dragover.prevent
+            @dragenter.prevent
+            @drop.prevent="handleDrop"
+          >
+            <!-- 已上传的图片预览 -->
+            <div
+              v-for="(url, idx) in images"
+              :key="'img-' + idx"
+              class="img-item"
+            >
+              <img :src="url" alt="" class="preview-thumb" />
+              <button type="button" class="img-remove" @click="removeImage(idx)" title="移除">
+                &times;
+              </button>
+            </div>
+
+            <!-- 上传按钮 / 加载状态 -->
+            <label class="img-add-btn" :class="{ disabled: uploading }">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                @change="handleFileSelect"
+                :disabled="uploading"
+              />
+              <span v-if="uploading" class="upload-spinner"></span>
+              <span>{{ uploading ? '上传中…' : '+ 添加图片' }}</span>
+            </label>
           </div>
-          <div v-if="images.some((u) => u.trim())" class="img-previews">
-            <img
-              v-for="(url, idx) in images.filter((u) => u.trim()).slice(0, 3)"
-              :key="idx"
-              :src="url"
-              class="preview-thumb"
-              @error="(e) => (e.target as HTMLImageElement).style.display = 'none'"
-              alt=""
-            />
-          </div>
+          <p class="img-hint">
+            支持 JPG / PNG / GIF / WebP，单张 ≤ 5MB，最多 9 张。
+            可点击选择、拖拽文件、或 <kbd>Ctrl+V</kbd> 粘贴截图。
+          </p>
         </FormField>
 
         <!-- 二手交易 -->
@@ -469,10 +585,92 @@ button:disabled { cursor: not-allowed; opacity: 0.7; }
 .err-box { background: var(--danger-light); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 12px; }
 .err-box span { font-size: 13px; color: var(--danger); }
 
-.img-inputs { display: flex; flex-direction: column; gap: 6px; }
-.img-url { font-size: 13px !important; }
-.img-previews { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; }
-.preview-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e0e0e0; }
+/* ---------- 图片上传区域 ---------- */
+.img-upload-area {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  min-height: 88px; padding: 12px;
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  background: var(--bg);
+  transition: border-color var(--transition);
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.img-upload-area:hover { border-color: var(--primary); }
+
+.img-item {
+  position: relative;
+  width: 80px; height: 60px;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+.preview-thumb {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.img-remove {
+  position: absolute; top: 2px; right: 2px;
+  width: 20px; height: 20px; padding: 0;
+  border-radius: 50%; border: none;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 14px; line-height: 20px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.img-item:hover .img-remove { opacity: 1; }
+
+.img-add-btn {
+  width: 80px; height: 60px;
+  border-radius: 6px;
+  border: 1px dashed #bbb;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--text-light);
+  cursor: pointer; flex-shrink: 0;
+  transition: all var(--transition);
+  user-select: none;
+  gap: 4px;
+}
+.img-add-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(91,155,213,.06); }
+.img-add-btn.disabled { pointer-events: none; opacity: .6; }
+
+.upload-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid #d1d5db;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.img-hint {
+  margin: 6px 0 0;
+  font-size: 12px; color: var(--text-light);
+}
+.img-hint kbd {
+  padding: 1px 5px; font-size: 11px;
+  border: 1px solid #ccc; border-radius: 3px;
+  background: #f5f5f5;
+}
+
+/* ---------- 内联通知条 ---------- */
+.notify-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; margin-bottom: 16px;
+  border-radius: 8px; font-size: 14px;
+  font-weight: 500;
+}
+.notify-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.notify-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.notify-info    { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.notify-icon { font-weight: 700; font-size: 16px; }
+
+/* 进出动画 */
+.notify-enter-active { transition: all .3s ease-out; }
+.notify-leave-active { transition: all .25s ease-in; }
+.notify-enter-from,
+.notify-leave-to   { opacity: 0; transform: translateY(-8px); }
 
 .login-required { text-align: center; padding: 60px 0; }
 .login-required p { margin: 0 0 16px; font-size: 15px; color: var(--text-light); }

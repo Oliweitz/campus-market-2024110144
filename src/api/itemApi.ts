@@ -49,4 +49,12 @@ export const itemApi = {
   deleteItem(id: string | number) {
     return request.delete(`/items/${id}`)
   },
+
+  /** 上传单张图片，返回 { url: string } */
+  uploadImage(file: File) {
+    const formData = new FormData()
+    formData.append('image', file)
+    // 不手动设置 Content-Type，让 axios 自动生成带 boundary 的 multipart 头
+    return request.post<{ url: string }>('/upload', formData, { timeout: 15000 })
+  },
 }

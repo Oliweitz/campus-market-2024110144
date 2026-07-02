@@ -8,9 +8,8 @@ import { API_BASE_URL } from '@/utils/constants'
 const request = axios.create({
   baseURL: API_BASE_URL,
   timeout: 5000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // 不设默认 Content-Type：axios 自动为 JSON 对象设 application/json，
+  // 为 FormData 设 multipart/form-data（含 boundary），避免冲突
 })
 
 // 响应拦截器 — 统一错误处理

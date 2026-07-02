@@ -277,7 +277,7 @@
       ],
       "publisherId": "1",
       "status": "进行中",
-      "viewCount": 81,
+      "viewCount": 82,
       "favoriteCount": 4,
       "createdAt": "2026-06-27 10:00:00",
       "updatedAt": "2026-06-27 10:00:00",
@@ -302,13 +302,13 @@
       ],
       "publisherId": "2",
       "status": "进行中",
-      "viewCount": 112,
+      "viewCount": 113,
       "favoriteCount": 9,
       "createdAt": "2026-06-26 15:00:00",
-      "updatedAt": "2026-06-26 15:00:00",
+      "updatedAt": "2026-07-01T06:27:07.302Z",
       "groupType": "学习搭子",
       "targetCount": 3,
-      "currentCount": 1,
+      "currentCount": 2,
       "deadline": "2026-07-05"
     },
     {
@@ -658,31 +658,31 @@
       "id": "8hOWC8pbP3E"
     },
     {
-      "type": "errand",
-      "title": "帮忙买一袋洗衣粉",
-      "description": "帮忙到南门外买一袋洗衣服",
+      "type": "secondhand",
+      "title": "帮做数据处理",
+      "description": "帮忙做实验大批量数据处理",
       "campus": "南校区",
-      "location": "南12",
+      "location": "都可以",
       "tags": [
-        "跑腿代买"
+        "数据处理，实验"
       ],
-      "images": [],
+      "images": [
+        "/uploads/1782953406372-746109191.png"
+      ],
       "publisherId": "1",
       "publisher": "张三",
-      "publishTime": "2026-06-30 02:30",
+      "publishTime": "2026-07-02 00:52",
       "status": "进行中",
-      "viewCount": 2,
+      "viewCount": 1,
       "favoriteCount": 0,
-      "createdAt": "2026-06-30 10:30:15",
-      "updatedAt": "2026-06-30 10:30:15",
-      "taskType": "代买",
-      "reward": 5,
-      "from": "南门",
-      "to": "南12",
-      "deadline": "2026-07-02 18:00",
-      "taskPlace": "校门外任意店铺",
-      "expectedTime": "6/26 9：00之前",
-      "id": "rW8uxpx"
+      "createdAt": "2026-07-02 08:52:08",
+      "updatedAt": "2026-07-02 08:52:08",
+      "category": "教材资料",
+      "price": 50,
+      "condition": "全新",
+      "allowBargain": true,
+      "stock": 100,
+      "id": "aewg0Rv"
     }
   ],
   "favorites": [
@@ -739,8 +739,8 @@
         "1",
         "3"
       ],
-      "lastMessage": "什么时候方便？",
-      "updatedAt": "2026-06-27 16:30:00"
+      "lastMessage": "谢谢，已回复。",
+      "updatedAt": "2026-07-02 08:29:37"
     },
     {
       "id": "3",
@@ -801,6 +801,20 @@
       "text": "好的，收到。",
       "createdAt": "2026-06-29T08:42:17.824Z",
       "id": "qzGz3fz"
+    },
+    {
+      "conversationId": "2",
+      "senderId": "1",
+      "text": "还在吗？",
+      "createdAt": "2026-07-02T00:29:36.203Z",
+      "id": "6qpwhgV"
+    },
+    {
+      "conversationId": "2",
+      "senderId": 3,
+      "text": "谢谢，已回复。",
+      "createdAt": "2026-07-02T00:29:37.110Z",
+      "id": "6zJKMSl"
     }
   ],
   "notices": [

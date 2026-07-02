@@ -82,6 +82,12 @@ export const useItemStore = defineStore('item', () => {
     }
   }
 
+  /** 上传图片，返回 { url: string } */
+  async function uploadImage(file: File): Promise<{ url: string }> {
+    const res = await itemApi.uploadImage(file)
+    return res.data
+  }
+
   /** 更新状态 */
   async function updateStatus(id: string | number, status: ItemStatus): Promise<boolean> {
     try {
@@ -141,5 +147,5 @@ export const useItemStore = defineStore('item', () => {
     } catch { return false }
   }
 
-  return { items, loading, error, activeItems, completedItems, totalCount, getByType, getByPublisher, fetchItems, getById, fetchById, createItem, updateStatus, incrementView, syncFavoriteCount, joinGroup, deleteItem, updateStock }
+  return { items, loading, error, activeItems, completedItems, totalCount, getByType, getByPublisher, fetchItems, getById, fetchById, createItem, uploadImage, updateStatus, incrementView, syncFavoriteCount, joinGroup, deleteItem, updateStock }
 })

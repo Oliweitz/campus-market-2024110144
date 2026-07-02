@@ -312,3 +312,54 @@ Day3 实训手册要求对「我的设计」和「AI 设计」做明确比较。
   2. **静默空白是前端最差的体验**：没有 loading 用户不知道在加载，没有 error 用户不知道出错了，没有 empty 用户不知道是没数据。三种状态缺任何一种，用户都会困惑。HomeView 之前的安全提醒、分类卡片、快捷入口都能正常显示，唯独数据区域静默失败——这种"半正常"的页面比全白屏更隐蔽
   3. **数据持久化是可信赖应用的底线**：用户不会理解"清缓存会丢"这个技术概念，他们只会觉得"这个应用把我的数据搞丢了"。双写策略（localStorage + API）在可靠性和性能之间取了平衡——localStorage 是给用户的速度体验，JSON Server 是给用户的安全保障。`.catch(()=>{})` 的设计确保了"API 挂了不影响使用"的降级能力
   4. **首次迁移逻辑的价值**：syncFromServer 中的"本地有但服务端无→自动上传"逻辑，让存量用户的本地数据在升级后自动迁移到服务端，无需手动操作。这是实际项目中数据迁移的常见模式
+
+---
+
+### 36. Day7 终轮优化：图片上传功能实现
+
+- **Prompt**：帮我看看这个项目的发布里是如何实现发送图片的 → 给我改成真正的图片上传功能，能够复制粘贴或者从本地上传图片 → 为什么上传图片提示失败 → 最终调试修复
+
+- **AI 输出**：AI 完成了以下完整工作链：
+  1. **现状分析**：通读 `PublishForm.vue`、`itemApi.ts`、`http.ts`、`vite.config.ts`、`package.json`、`db.json`，确认原项目图片"上传"实际是三个文本输入框让用户粘贴外部 URL，不存在任何文件选择器、FormData、FileReader 或服务端上传端点
+  2. **架构设计**：因为 json-server 不支持 multipart 文件上传，AI 设计了"自定义 Express 服务器包裹 json-server + multer"方案。文件存储至 `public/uploads/`（Vite 自动作为静态文件服务），返回相对路径 `/uploads/xxx.png`
+  3. **服务端实现**：创建 `scripts/server.cjs`（CommonJS 格式以兼容 json-server/multer），包含 multer 磁盘存储配置（时间戳+随机数防碰撞文件名、5MB 限制、image/* 类型过滤）、`POST /upload` 端点、全局错误处理（区分 MulterError 和普通 Error）
+  4. **前端实现**：PublishForm.vue 从 `images = ['','','']` 重构为 `images = []`（空数组动态增长），新增三种上传入口（`<input type="file" multiple>` 点击选择、`@paste` 剪贴板粘贴截图、`@drop` 拖拽文件），`processFiles()` 校验管道（类型→大小→数量→逐个上传），上传中 spinning 动画 + 按钮禁用，缩略图网格 + 悬停 × 移除
+  5. **Store/API 层**：itemApi 新增 `uploadImage(file)` FormData POST、itemStore 新增 `uploadImage()` action
+
+- **Bug 修复过程**：
+  - **问题**：用户反馈"上传 jpg 也提示失败"
+  - **根因**：`itemApi.ts` 手动设置了 `headers: { 'Content-Type': 'multipart/form-data' }` 但缺少必需的 `boundary` 参数。multipart 格式要求 `Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...`，缺少 boundary 导致 multer 无法解析请求体
+  - **修复**：删除手动 Content-Type 头，让 axios 自动检测 FormData 并生成完整 multipart 头。同时移除 `http.ts` 中 axios 实例的默认 `Content-Type: application/json`，避免潜在冲突
+  - **验证**：curl 测试通过 — 无文件返回 400 `{"error":"请选择图片文件"}`，有文件返回 200 `{"url":"/uploads/xxx.png"}`；Vite proxy 转发正常；静态文件 `/uploads/xxx.png` 可访问
+
+- **修改/调整**：
+  1. 服务器文件最初考虑 `.mjs` 格式，但 json-server 和 multer 均为 CJS 模块，最终使用 `.cjs` 扩展名明确声明 CommonJS
+  2. `package.json` mock 脚本从 `json-server --watch db.json --port 3000` 改为 `node scripts/server.cjs`
+  3. 新增 `multer` 依赖（devDependencies），`pnpm install` 后 lockfile 自动更新
+  4. 创建 `public/uploads/.gitkeep` 保持目录在 git 中
+
+- **结论**：
+  1. **multipart/form-data 的 boundary 是常见陷阱**：手动设置 Content-Type 时很容易遗漏 boundary 参数。正确的做法是永远让 HTTP 库（axios/fetch）自动处理 multipart 请求头
+  2. **json-server 的限制与扩展**：json-server 本身不支持文件上传，但通过 `jsonServer.create()` 返回的 Express app 可以注册自定义中间件。`scripts/server.cjs` 模式适用于任何需要扩展 json-server 功能的场景
+  3. **三种上传方式覆盖不同用户习惯**：点击选择适合传统文件浏览、Ctrl+V 适合截图后快速粘贴、拖拽适合文件管理器直接拉入。三者共用同一套 `processFiles()` 校验管道，避免逻辑重复
+  4. **前端上传的校验管道设计**：类型校验 → 大小校验 → 数量校验 → 逐个上传。每步失败都给出具体提示（"不是图片文件，已跳过" / "超过 5MB 限制" / "最多 9 张"），比笼统的"上传失败"更有用
+
+### 37. Day7 终轮优化：window.alert 替换为内联通知
+
+- **Prompt**：结合一下 Day6 任务看看还有哪些不足之处 → 给我把 window.alert 替换了
+
+- **AI 输出**：
+  1. **审计分析**：对照 Day6 实训文档逐项审查，发现 11/12 项要求已满足，唯一 PARTIAL 项是发布页 5 处 `window.alert()` 不符合"不建议大量使用 alert"的规范
+  2. **方案设计**：采用组件内联通知条而非全局 Toast 组件。理由：发布页是唯一需要大量反馈的页面，内联方案改动最小、风险最低、代码自包含，符合 Day6 "不过度抽象"原则
+  3. **实现**：PublishForm.vue 新增 `notify` reactive 对象（show/type/message）+ `showNotification()` 方法（自动 3.5s 消失 + 防抖重置定时器）。通知条三色变体（绿/红/蓝）+ Vue `<Transition>` 进出动画。发布成功后延迟 600ms 跳转确保用户看到提示
+  4. **全局清理**：`grep -r 'window.alert(' src/` 确认零残留
+
+- **修改**：
+  1. 通知显示时长从初始 3s 调整为 3.5s——中文阅读速度约 3-5 字/秒，"发布成功"4 字但用户需要反应时间
+  2. 发布成功跳转延迟从 0 改为 600ms——让通知动画播完再跳，避免"一闪而过看不到"
+
+- **结论**：
+  1. **alert 的三个问题**：阻断 JS 执行（用户必须点确定）、样式不可控（浏览器原生样式）、信息不可追溯（关闭即消失）。内联通知解决了全部三个问题
+  2. **"不过度抽象"是教学项目的关键原则**：全局 Toast 组件需要 provide/inject 或 store 传递状态，对教学项目来说过度复杂。组件内通知条 30 行代码解决问题，维护成本极低
+  3. **审计驱动的优化比盲目堆功能更有价值**：对照规范文档逐项审查 → 定位唯一薄弱点 → 精准修复。这种模式比"想到什么改什么"高效得多
+  4. **600ms 延迟的价值**：发布成功是用户最关心的反馈，如果立即跳转用户看不到任何确认信息就会怀疑"到底发没发出去"。600ms 刚好够看完通知再跳转
